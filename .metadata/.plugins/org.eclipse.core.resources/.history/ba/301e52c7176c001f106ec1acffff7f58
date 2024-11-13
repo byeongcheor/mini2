@@ -1,0 +1,120 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<title>음식 | DANDI</title>
+<link rel="stylesheet" href="/mini/css/food.css" type="text/css"/>
+
+
+<div class="restList">
+    <!-- 반복문 시작 -->
+            <div class="tagHeader">
+            <h2>${food[0].category}</h2>
+            <button class="view-more">자세히 보기 ></button>
+        </div>
+        <div class="food">
+    <c:forEach var="foodVO" items="${food}">
+        <div class="food-list">
+            <div class="food-item">
+                        <a href="/mini/rest/restView/${foodVO.rest_code}">
+                            <img src="${foodVO.imageurl}" alt="음식 이미지"/></a>
+                <p>${foodVO.store_name}</p>
+            </div>
+        </div>
+    </c:forEach>
+        </div>
+    <!-- 반복문 끝 -->
+</div>
+<div class="restList">
+    <!-- 반복문 시작 -->
+            <div class="tagHeader">
+            <h2>${Japanesefood[0].category}</h2>
+            <button class="view-more">자세히 보기 ></button>
+        </div>
+        <div class="food">
+    <c:forEach var="foodVO" items="${Japanesefood}">
+        <div class="food-list">
+             <div class="food-item">
+                        <a href="/mini/rest/restView/${foodVO.rest_code}">
+                            <img src="${foodVO.imageurl}" alt="음식 이미지"/></a>
+                <p>${foodVO.store_name}</p>
+            </div>
+        </div>
+    </c:forEach>
+        </div>
+    <!-- 반복문 끝 -->
+</div>
+<div class="restList">
+    <!-- 반복문 시작 -->
+            <div class="tagHeader">
+            <h2>${westernstyle[0].category}</h2>
+            <button class="view-more">자세히 보기 ></button>
+        </div>
+        <div class="food">
+    <c:forEach var="foodVO" items="${westernstyle}">
+        <div class="food-list">
+             <div class="food-item">
+                        <a href="/mini/rest/restView/${foodVO.rest_code}">
+                            <img src="${foodVO.imageurl}" alt="음식 이미지"/></a>
+                <p>${foodVO.store_name}</p>
+            </div>
+        </div>
+    </c:forEach>
+        </div>
+    <!-- 반복문 끝 -->
+</div>
+<div class="restList">
+    <!-- 반복문 시작 -->
+            <div class="tagHeader">
+            <h2>${cafe[0].category}</h2>
+            <button class="view-more">자세히 보기 ></button>
+        </div>
+        <div class="food">
+    <c:forEach var="foodVO" items="${cafe}">
+        <div class="food-list">
+             <div class="food-item">
+                        <a href="/mini/rest/restView/${foodVO.rest_code}">
+                            <img src="${foodVO.imageurl}" alt="음식 이미지"/></a>
+                <p>${foodVO.store_name}</p>
+            </div>
+        </div>
+    </c:forEach>
+        </div>
+    <!-- 반복문 끝 -->
+</div>
+<div class="restList">
+    <!-- 반복문 시작 -->
+            <div class="tagHeader">
+            <h2>${Chinesefood[0].category}</h2>
+            <button class="view-more">자세히 보기 ></button>
+        </div>
+        <div class="food">
+    <c:forEach var="foodVO" items="${Chinesefood}">
+        <div class="food-list">
+            <div class="food-item">
+                        <a href="/mini/rest/restView/${foodVO.rest_code}">
+                            <img src="${foodVO.imageurl}" alt="음식 이미지"/></a>
+                <p>${foodVO.store_name}</p>
+            </div>
+        </div>
+    </c:forEach>
+        </div>
+    <!-- 반복문 끝 -->
+</div>
+<div class="restList">
+    <!-- 반복문 시작 -->
+            <div class="tagHeader">
+            <h2>${Uniquefood[0].category}</h2>
+            <button class="view-more">자세히 보기 ></button>
+        </div>
+        <div class="food">
+    <c:forEach var="foodVO" items="${Uniquefood}">
+        <div class="food-list">
+             <div class="food-item">
+                        <a href="/mini/rest/restView/${foodVO.rest_code}">
+                            <img src="${foodVO.imageurl}" alt="음식 이미지"/></a>
+                <p>${foodVO.store_name}</p>
+            </div>
+        </div>
+    </c:forEach>
+        </div>
+    <!-- 반복문 끝 -->
+</div>

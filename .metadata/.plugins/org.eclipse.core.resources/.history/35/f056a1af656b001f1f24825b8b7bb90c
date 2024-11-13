@@ -1,0 +1,5 @@
+package com.ict.mini.service;
+
+public interface MypageService {
+
+}

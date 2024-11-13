@@ -1,0 +1,157 @@
+package com.ict.mini.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.ict.mini.service.MemberService;
+import com.ict.mini.vo.MemberVO;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Controller
+@Slf4j
+@RequestMapping("/mypage")
+public class MemberController {
+
+	@Inject
+	MemberService service;
+	//로그인 폼으로 이동
+		@GetMapping("/login")
+		public String login() {
+			// /WEB-INF/views/member/login.jsp
+			return "/mypage/login"; //로그인 뷰페이지 명
+		}
+		//로그인 (DB조회)
+		@PostMapping("/loginOk")
+		public String loginOk(MemberVO vo, HttpSession session) {//아이디,비번 request
+			System.out.println(vo.toString());
+			MemberVO resultVo = service.loginOk(vo);//아이디와 비번이 있으면 담고 , 없으면 null이 들어온다.
+			//System.out.println(resultVo.toString());
+			
+			if(resultVo==null) {//로그인실패-> 로그인폼
+				return "redirect: /login";
+				
+			}else {//로그인 성공하면 -> 세션 로그인 정보기록 -> 홈
+				session.setAttribute("logId", resultVo.getUserid());
+				session.setAttribute("logName", resultVo.getUsername());
+				session.setAttribute("logStatus", "Y");
+				
+				return "/mypage/loginOk"; //redirect는 뷰페이지로 이동하지 않고 원하는 컨트롤러 매핑으로 바로 이동한다.
+			}	
+		}
+	/*
+	 * //로그인 폼 팝업창
+	 * 
+	 * @GetMapping("/mypage/login") public String showLoginPopup() { return
+	 * "/mypage/login"; // WEB-INF/views/login.jsp로 매핑됨 }
+	 * 
+	 * @PostMapping("/mypage/loginOk") public String loginOk(String username, String
+	 * password) { // 로그인 처리 로직 if ("user".equals(username) &&
+	 * "password".equals(password)) { return "redirect:/home"; // 로그인 성공 시 메인 페이지로
+	 * 리다이렉트 } return "mypage/login"; // 로그인 실패 시 다시 로그인 페이지로 }
+	 */
+		
+	//로그아웃
+		@GetMapping("/logout")
+		public String logout(HttpSession session) {
+			session.invalidate();
+			return "redirect:/";
+		}
+	//회원가입
+		@GetMapping("/join")
+		public String join() {
+			return "/mypage/join";
+		}
+		 //아이디 중복검사
+		@GetMapping("/idDoubleCheck")
+		public ModelAndView idDoubleCheck(String userid) {
+			
+			//db 조회
+			int result = service.idDoubleCheck(userid);
+			
+			ModelAndView mav = new ModelAndView();
+			mav.addObject("result", result);
+			mav.addObject("userid", userid); //뷰페이지에서 필요함
+			mav.setViewName("mypage/idDoubleCheck");
+		
+			
+			return mav; 
+		}
+		//회원가입
+		@PostMapping("/joinOk")
+		public ModelAndView joinOk(MemberVO vo) {
+			
+			int result=0;
+			//insert -> int 
+			try {
+				result = service.memberInsert(vo);
+			}catch(Exception e){
+				
+			}
+			ModelAndView mav = new ModelAndView();
+			mav.addObject("result",result);
+			mav.setViewName("mypage/joinResult");
+			
+			return mav;
+		}
+		//회원정보 수정폼
+		@GetMapping("/joinEdit")
+		public ModelAndView joinEdit(HttpSession session) {
+			//세션에 있는 로그인 아이디 -> 해당아이디의 정보를 DB에서 Select하기
+			String userid = (String)session.getAttribute("logId");
+			
+			MemberVO vo = service.memberSelect(userid);
+			
+			ModelAndView mav = new ModelAndView();
+			mav.addObject("vo", vo);
+			mav.setViewName("mypage/joinEdit");
+			
+			return mav;
+			
+		}
+		
+		//회원정보 수정(DB update)
+		@PostMapping("/joinEditOk")
+		public String joinEditOk(MemberVO vo, HttpSession session) {
+			vo.setUserid((String)session.getAttribute("logId"));
+			
+			service.memberUpdate(vo);
+			
+			return "redirect:joinEdit";
+			
+			
+			
+		}
+		//아이디찾기
+
+//	    @RequestMapping(value = "mypage/findId", method = RequestMethod.POST)
+//	    @ResponseBody
+//	    public Map<String, Object> findId(@RequestParam("username") String username,
+//	                                      @RequestParam("tel") String tel) {
+//	        Map<String, Object> response = new HashMap<>();
+//	        String userId = memberService.findId(username, tel);
+//
+//	        if (userId != null) {
+//	            response.put("result", userId);
+//	        } else {
+//	            response.put("result", null); // 일치하는 회원 정보가 없는 경우
+//	        }
+//	        return response;
+//	    }
+
+		
+}

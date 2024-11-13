@@ -1,0 +1,225 @@
+@charset "UTF-8";
+
+.restList {
+    width: 50%;
+    margin: 30px auto;
+    background-color: white;
+    padding: 0;
+    border-radius : 30px 30px 30px 30px;
+    height : 340px;
+    padding-top : 0;
+    border : 1px solid gray;
+}
+
+.tagHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom : 1px solid lightgray;
+    padding : 10px;
+    background-color : lightgray;
+    border-radius : 30px 30px 0px 0px;
+}
+
+.tagHeader h2 {
+    margin: 10;
+}
+
+.view-more {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-right : 15px;
+}
+
+.food{
+   display : flex;
+   overflow : hidden;
+   gap : 20px;
+}
+
+.food-list {
+    display: flex;
+    gap: 20px; 
+    flex: 0 0 calc(20% - 10px);
+}
+
+
+.food-item {
+    text-align: center; /* 텍스트를 가운데 정렬 */
+    overflow: hidden; /* 넘치는 내용 숨기기 */
+    background-color: #f9f9f9; /* 배경색 추가 */
+    border-radius: 30px; /* 모서리를 둥글게 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    padding: 10px; /* 패딩 추가 */
+}
+
+.food-item a:Link, a:visited, a:hover{
+   text-decoration : none;
+   color : black;
+}
+
+.food-item img {
+    width: 200px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    height : 200px;
+}
+
+.food-item p {
+    font-size: 14px;
+    margin: 0;
+}
+
+ /* ----------------------------음식 상세 스타일--------------------------- */
+ /* 전체 DIV */
+.all {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 1000px;
+    margin: 0 auto;
+    justify-content: center;
+        border-radius : 20px;
+    border : 1px solid lightgray;
+    padding : 10px;
+}
+
+/* 가게 대표이미지 DIV 영역 */
+.imageurl img {
+    display: block; /* 기본적으로 블록 레벨 요소로 설정 */
+    margin: 0 auto;
+    width: 700px;
+    height: 400px;
+}
+
+/* 가게 이름 DIV 영역 */
+.store_name h1 {
+    text-align: center;
+    font-size: 3.5em;
+    margin: 20px;
+}
+
+/* 상세내용 DIV */
+.location {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px; 
+    margin-bottom: 30px;
+    font-size: 1.4em;
+    margin: 10px;
+}
+
+/* 각 위치 항목 */
+.location-item {
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+/* 영업시간 DIV 영역 */
+.all1 {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 1000px;
+    margin: 0 auto;
+    justify-content: center;
+    margin-top: 20px; /* 적절한 여백 추가 */
+    border-radius : 20px;
+    border : 1px solid lightgray;
+    padding : 10px;
+}
+
+/* 영업시간 섹션 */
+.hddfds {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px; 
+    margin-bottom: 30px;
+    font-size: 1.4em;
+}
+
+/* 영업시간 아이템 */
+.hddfds-item {
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+/* 영업시간 표시 */
+.opentime {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; /* 왼쪽 정렬 */
+        margin-bottom : 10px;
+}
+
+.opentime span {
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+/* 시간 정보 */
+.hddfds_opentime {
+    font-size: 0.8em; /* 폰트 크기 조정 */
+    line-height: 1.5em; /* 줄 간격 조정 */
+}
+
+/* 리뷰 및 평점 표시 */
+.all2 {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 1000px;
+    margin: 0 auto;
+    justify-content: center;
+    margin-top: 20px; /* 적절한 여백 추가 */
+    border-radius : 10px;
+    border : 1px solid lightgray;
+    padding : 10px;
+}
+
+/* 영업시간 표시 */
+.menu {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start; /* 왼쪽 정렬 */
+        margin-bottom : 10px;
+}
+
+.menu span {
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+.all3 {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 1000px;
+    margin: 0 auto;
+    justify-content: center;
+    margin-top: 20px; /* 적절한 여백 추가 */
+    border-radius: 20px;
+    border: 1px solid lightgray;
+    padding: 10px;
+}
+
+.image {
+    display: flex;
+    flex-direction: column; 
+}
+
+.image span {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-bottom: 10px; 
+}
+
+.hddfds_image {
+    display: flex;
+    gap: 10px; 
+    overflow-x: auto; 
+}
+
+.hddfds_image img {
+    width : 300px;
+    height: 300px; 
+    border-radius: 5px; /* 이미지 모서리 둥글게 설정 */
+}

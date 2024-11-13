@@ -1,0 +1,11 @@
+package com.ict.mini.dao;
+
+import java.util.List;
+
+import com.ict.mini.vo.InquiryVO;
+import com.ict.mini.vo.PagingVO;
+
+public interface MypageDAO {
+	public List<InquiryVO> myinquiry(String userid,PagingVO pVO);
+	public int totalmyinquiry(PagingVO pVO);
+}

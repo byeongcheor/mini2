@@ -1,0 +1,15 @@
+package com.ict.mini.service;
+
+import com.ict.mini.vo.MemberVO;
+
+public interface MemberService {
+	public MemberVO loginOk(MemberVO vo);
+	public int idDoubleCheck(String userid);
+	public int memberInsert(MemberVO vo);
+	public MemberVO memberSelect(String userid);
+	public int memberUpdate(MemberVO vo);
+
+	
+	
+   public String findId(String username, String tel);
+}

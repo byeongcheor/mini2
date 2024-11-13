@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.ict.mini.dao.MemberDAO">
+  <select id="loginOk" resultType="com.ict.mini.vo.MemberVO">
+    	select userid, username from user_tbl
+    	where userid=#{userid} and userpwd=#{userpwd}
+  </select>
+   <select id="idDoubleCheck" resultType="int">
+ 		 select count(userid) from user_tbl where userid=#{param1} 
+  </select>
+  <insert id="memberInsert">
+  	insert into user_tbl(userid, userpwd, username, email, tel, zipcode, addr, addrdetail)
+  	values(#{userid},#{userpwd},#{username},#{email},#{tel},#{zipcode},#{addr},#{addrdetail})
+  </insert>
+  <select id="memberSelect" resultType="com.ict.mini.vo.MemberVO">
+  	select userid, username, email, tel, zipcode, addr, addrdetail
+  	from user_tbl where userid=#{param1}
+  </select>
+  <update id="memberUpdate">
+  	update user_tbl set email=#{email}, tel=#{tel}, zipcode=#{zipcode}, addr=#{addr}, addrdetail=#{addrdetail}
+	where userid=#{userid} and userpwd=#{userpwd}
+  </update>
+ 
+ 
+ 
+
+  
+  
+  
+  </mapper>

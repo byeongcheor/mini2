@@ -1,0 +1,26 @@
+package com.ict.mini.vo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class RestVO {
+		private int rest_code;
+		private String store_name;
+		private String zipcode;
+		private String addr;
+		private String X_point;
+		private String Y_point;
+		private String explanation;
+		private String tel;
+		private String opentime;
+		private String rest;
+		private String Rep_menu;
+		private String menu;
+		private String reservation;
+		private String category;
+		private String imageurl;
+}

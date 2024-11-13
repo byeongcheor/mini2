@@ -1,0 +1,53 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
+<style>
+.findIdFrm{
+        width: 350px;  margin: 0 auto; overflow:auto;
+    }
+</style>
+<script>
+function setFindIdData() {
+    document.getElementById('usernameError').innerText = '';
+    document.getElementById('telError').innerText = '';
+
+    var formData = {
+        username: document.getElementById('username').value,
+        usertel: document.getElementById('tel').value
+    };
+
+    if (formData.username === '') {
+        document.getElementById('usernameError').innerText = '이름을 입력하세요.';
+        return false;
+    }
+    if (formData.usertel === '') {
+        document.getElementById('telError').innerText = '휴대전화번호를 입력하세요.';
+        return false;
+    }
+
+    axios.post('http://192.168.0.62:20000/findId', formData)
+        .then(function (response) {
+            if (response.data.result && response.data.result.length > 0) {
+                alert(formData.username + "님의 아이디는 " + response.data.result + "입니다.");
+                window.location.href = '/mini/mypage/login'; // '/login' 경로가 존재하는지 확인하세요.
+            } else {
+                alert("일치하는 회원정보가 없습니다.");
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+
+</script>
+<div class="findIdFrm">
+	<form method="post" action="/mini/mypage/findIdOk" onsubmit="return formCheck()">
+		<h1 class="loginTop"><img src="/mini/images/logo.png"></h1>
+		<input type="text" name="username" id="username" placeholder="이름" />
+		<input type="text" name="tel" id="tel" placeholder="휴대전화"/><br/>
+		<input type="button" value="돌아가기"  onclick="window.location.href='/mini/mypage/login';"/>
+		<input type="submit" class="findIdbtn" value="아이디찾기" onclick="setFindIdData()"/>
+	</form>
+	
+      
+    
+</div>

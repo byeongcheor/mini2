@@ -1,0 +1,33 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
+<link rel="stylesheet" href="/mini/css/mypages.css" type="text/css"/>
+    
+    
+    
+    <div class="mypageFavFrm">
+	
+		<div class="mypageFavTop">
+			<div class="mypageFavName">
+				<a href="/mini/mypage/mypage"> 마이페이지</a>
+			</div>
+			<h2>Q&A</h2>
+		</div>
+		<div class="mypageFavMain">
+			
+			
+			
+		</div>
+		<ul class="pagination justify-content-center">
+  
+		</ul>
+		<div class="box_rightType1">
+			<!-- snb -->
+			<div class="snb_mypage">
+				<ul>
+					<li ><a href="/mini/mypage/mypage_list_fav">즐겨찾기</a></li>
+					<li class="on"><a href="/mini/mypage/mypage_list_cs">코스</a></li>
+					<li><a href="/mini/mypage/qnaList" id="qna">Q&A</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	

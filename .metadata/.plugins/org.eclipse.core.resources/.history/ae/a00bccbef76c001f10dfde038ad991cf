@@ -1,0 +1,340 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+   pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"  %>
+<script src="https://kit.fontawesome.com/5736c47827.js" crossorigin="anonymous"></script>
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=b45e962e5c780aecefa8a8cae0f46328&autoload=false"></script>
+<link rel="stylesheet" href="/mini/css/food.css" type="text/css"/>
+<title>${restView.store_name} : 음식 | 상세 정보</title>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 별점 클릭 이벤트 처리
+    const stars = document.querySelectorAll('.star');
+    const selectedRatingInput = document.getElementById('selectedRating');
+    const reviewForm = document.getElementById('reviewForm');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.getAttribute('data-value'); // 선택된 별점 값을 가져옵니다.
+
+            // 선택된 별점 값을 hidden input 필드에 설정합니다.
+            selectedRatingInput.value = rating;
+
+            // 모든 별점을 기본 색으로 리셋합니다.
+            stars.forEach(s => s.classList.remove('selected'));
+
+            // 클릭된 별점과 그 이전 별점에 'selected' 클래스를 추가하여 강조합니다.
+            this.classList.add('selected');
+            let previousSibling = this.previousElementSibling;
+            while (previousSibling) {
+                previousSibling.classList.add('selected');
+                previousSibling = previousSibling.previousElementSibling;
+            }
+        });
+    });
+   
+    // 리뷰 제출 버튼 클릭 시 폼 제출
+    const reviewSubmitButton = document.querySelector('.review-submit');
+    if (reviewSubmitButton) {
+        reviewSubmitButton.addEventListener('click', function(event) {
+            if (selectedRatingInput.value === '') {
+                alert('별점을 선택해 주세요.');
+                event.preventDefault(); // 별점을 선택하지 않으면 폼 제출 방지
+            }
+        });
+    }
+
+    // 좋아요 버튼 클릭 시
+    document.querySelector('#like-icon').addEventListener('click', function() {
+        var rest_code = '${restView.rest_code}';  // 레스토랑 코드
+        var userId = '${logId}';  // 로그인 사용자 ID
+
+        fetch(`/mini/rest/restView/${rest_code}/Togglelikes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                rest_code: rest_code,
+                userid: userId
+            })
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.error) {
+                alert(response.error);
+            } else {
+                document.querySelector('#like-count').textContent = response.likeCount;
+                document.querySelector('#like-text').textContent = response.likes ? '♥' : '♡'; // '♥' 또는 '♡'로 업데이트
+            }
+        })
+        .catch(error => {
+            console.error('에러 발생:', error);
+        });
+    });
+
+    // 로그인 하였을 때 좋아요 상태 가져오기
+    const userId = '${logId}';  // 로그인 사용자 ID 가져오기
+
+    if (userId) {
+        fetch(`/mini/rest/restView/${restView.rest_code}/mylikes?userId=${userId}`)
+        .then(response => response.json())
+        .then(result => {
+            if (result.error) {
+                console.error(result.error);
+            } else {
+                console.log(result.likes);
+                // UI 업데이트: 'likes' 값을 기반으로 HTML을 수정합니다.
+                document.querySelector('#like-text').textContent = result.likes.length > 0 ? '♥' : '♡'; // '♥' 또는 '♡'로 업데이트
+            }
+        })
+        .catch(error => {
+            console.error('에러 발생:', error);
+        });
+    } else {
+        console.log('사용자가 로그인하지 않았습니다.');
+    }
+
+ // 리뷰 목록
+    function reviewList() {
+        var rest_code = "${rest_code}"; // JSTL로 서버에서 렌더링된 값 사용
+
+        $.ajax({
+            url: `/mini/rest/restView/${rest_code}/reviewsList`,
+            type: 'GET',
+            success: function(result) {
+                console.log(result);
+                var reviewTag = "";
+                $(result).each(function(idx, rrVO) {
+                   reviewTag += `<div><div><b>` + rrVO.userid +`</b> (`+rrVO.writedate +`)`;
+                    if (rrVO.userid === "${logId}") {  // 로그인을 했을 때만 수정/삭제 버튼
+                        reviewTag += `<input type='button' value='수정'  />
+                                      <input type = 'button' value = '삭제' alt = '`+rrVO.review_no+`'/></div>`;
+                                      reviewTag += `<p>`+rrVO.contents + `</p></div>
+                                      <div id='editForm${rrVO.review_no}' style='display:none'>
+                                          <form method='post'>
+                                          <textarea name = 'contents' id = 'contents`+rrVO.review_no+`'>`+rrVO.contents+`</textarea>
+                                          <input type = 'hidden' name = 'review_no' value = '`+rrVO.review_no+`'/>
+                                              <input type='submit' value='댓글수정하기' />
+                                          </form>
+                                      </div>
+                                      <hr />`;
+                    } else {
+                       reviewTag += `</div><p>`+rrVO.coment + `</p></div><hr/>`;
+                    }
+                });
+                $(".reviewList").html(reviewTag);
+            },
+            error: function(error) {
+                console.log('에러 발생:', error.responseText);
+            }
+        });
+    }
+
+        // 리뷰 목록 함수 호출
+        reviewList();
+})
+</script>
+
+<header class="header">
+        <img src="/mini/images/Food/${restView.imageurl}" alt="${restView.store_name} Image" class="header-img"/>
+        <h1 class="store-name">${restView.store_name}</h1>
+        <span class="status">${isOpen}</span>
+    </header>
+<!-- 주소 , 전화번호, 대표메뉴, 카테고리 영역  -->
+    <section class="details">
+        <div class="detail-item">
+            <i class="fa-solid fa-location-arrow"> 주소 </i>
+            <p>${restView.addr}</p>
+        </div>
+        <div class="detail-item">
+            <i class="fa-solid fa-headset"> 문의 및 안내 </i>
+            <p>${restView.tel}</p>
+        </div>
+        <div class="detail-item">
+            <i class="fa-solid fa-utensils"> 대표메뉴 </i>
+            <p> ${restView.repMenu}</p>
+        </div>
+        <div class="detail-item">
+            <i class="fa-solid fa-list"> 카테고리 </i>
+            <p>${restView.category}</p>
+        </div>
+      <div class="detail-item">
+          <i class="fa-solid fa-thumbs-up" id="like-icon"> 좋아요 / (<span id="like-count">${likeCount}</span>)</i>
+          <p id="like-text">${likes}</p>
+      </div>
+      <div class="detail-item">
+            <i class="fa-solid fa-list"> 별점 </i>
+            <p>${restreviewVO.averageRating}</p>
+        </div>
+    </section>
+
+<!-- 영업시간  -->
+    <section class="hours">
+        <h2>영업시간</h2>
+        <p>${restView.opentime}</p>
+    </section>
+<!-- 메뉴 리스트  -->
+    <section class="menu-list">
+        <h2>메뉴 리스트</h2>
+        <p>${restView.menu1}</p>
+    </section>
+<!-- 가게 사진 목록  -->
+    <section class="photos">
+        <h2>${restView.store_name}의 사진</h2>
+        <div class="photos-gallery">
+            <img src="${restView.imageurl1}" alt="Photo 1"/>
+            <img src="${restView.imageurl2}" alt="Photo 2"/>
+            <img src="${restView.imageurl3}" alt="Photo 3"/>
+        </div>
+    </section>
+<!-- 가게 상세 내용  -->
+    <section class="explanation">
+        <h2>상세 설명</h2>
+        <p>${restView.explanation}</p>
+    </section>
+</div>
+<!-- 리뷰 섹션 -->
+<c:if test="${logStatus == 'Y'}">
+    <section class="review-form">
+        <h3>리뷰 작성하기</h3>
+       <form id="reviewForm" method="post" action="/mini/rest/restView/${restView.rest_code}/ReviewOk">
+            <input type="hidden" name="rest_code" value="${restView.rest_code}"/>
+            
+            <!-- 리뷰 내용 -->
+<div class="form-group">
+    <label for="reviewContent">리뷰 내용:</label>
+    <textarea id="contents" name="contents" rows="4" required></textarea>
+</div>
+<!-- 별점 선택 -->
+<div class="form-group">
+    <label for="rating">별점:</label>
+    <div class="rating">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
+    </div>
+    <input type="hidden" id="selectedRating" name="rating" value=""/> <!-- 선택한 별점 값을 저장 -->
+</div>
+<!-- 리뷰 제출 -->
+<input class="submit" type="submit" value="리뷰제출"/>
+</form>
+</section>
+</c:if>
+    <section class="reviews">
+        <h2>리뷰</h2>
+        <div class="reviewList">
+            <!-- 리뷰 내용이 여기에 삽입됩니다 -->
+        </div>
+    </section>
+<!-- 지도 영역  -->
+ <section class="map">
+<h2>가게 위치</h2>
+    <div id="map" style="width:100%;height:700px;"></div>
+    <!-- 서버에서 전달받은 데이터 JSON으로 변환 -->
+    <script type="application/json" id="storeData">
+        ${kakaomapJson}
+    </script>
+<script>
+    function loadKakaoMapsScript(callback) {
+        const script = document.createElement('script');
+        script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=b45e962e5c780aecefa8a8cae0f46328&autoload=false';
+        script.onload = callback;
+        script.onerror = function() {
+            console.error('Failed to load Kakao Maps script.');
+        };
+        document.head.appendChild(script);
+    }
+
+    function initializeMap() {
+        kakao.maps.load(function() {
+            const jsonString = document.getElementById('storeData').textContent;
+            let locations;
+            try {
+                locations = JSON.parse(jsonString);
+                console.log('Parsed JSON data:', locations); // JSON 데이터 확인
+            } catch (e) {
+                console.error('Failed to parse JSON data:', e);
+                return;
+            }
+
+            const targetRestCode = locations.length > 0 ? locations[0].rest_code : null;
+            const targetLocations = locations.filter(locations => locations.rest_code === targetRestCode);
+
+            if (targetLocations.length === 0) {
+                console.error('No store data found for the specified rest_code.');
+                return;
+            }
+
+            const firstLocation = targetLocations[0];
+            const centerPosition = new kakao.maps.LatLng(parseFloat(firstLocation.x_point), parseFloat(firstLocation.y_point));
+            
+            const mapContainer = document.getElementById('map');
+            const mapOptions = {
+                center: centerPosition, 
+                level: 1,
+                disableDefaultUI: true
+            };
+            const map = new kakao.maps.Map(mapContainer, mapOptions);
+
+            
+            // 지도 이동 제어 비활성화
+            map.setDraggable(false); // 드래그로 이동 불가
+            map.setZoomable(false); // 줌 조절 불가
+
+            // 마커와 정보창 추가
+            targetLocations.forEach(locations => {
+                const position = new kakao.maps.LatLng(parseFloat(locations.x_point), parseFloat(locations.y_point));
+                const marker = new kakao.maps.Marker({
+                    position: position,
+                    map: map,
+                    clickable : true
+                });
+                
+                marker.setMap(map);
+                
+                const infowindowContent = `<div style="padding:5px; font-size : 0.5em;">`+locations.store_name+`</div>`;
+                iwRemoveable = true;                
+                
+                // InfoWindow 객체 생성
+                const infowindow = new kakao.maps.InfoWindow({
+                    content: infowindowContent,
+                    removable : iwRemoveable
+                });
+                
+                console.log(locations.store_name);
+                console.log(locations.addr);
+                
+                kakao.maps.event.addListener(marker, 'click', function() {
+                    infowindow.open(map, marker);
+                });
+            });
+        });
+    }
+
+    loadKakaoMapsScript(initializeMap);
+    </script>
+    </section>
+    
+  <!-- 같은 카테고리의 목록 보여주기 -->
+<section class="similarRestaurant">
+    <h2>${restView.store_name}과 비슷한 맛집</h2>
+    <div class="RestaurantSimilar">
+        <c:forEach var="restaurant" items="${similarRestaurant}">
+            <div class="photo-item">
+                <a href="/restaurantDetail?rest_code=${restaurant.rest_code}">
+                    <img src="/mini/images/Food/${restaurant.imageurl}" alt="${restaurant.store_name}"/>
+                </a>
+                <p>${restaurant.store_name}</p>
+            </div>
+        </c:forEach>
+    </div>
+</section>
+
+<!-- 리뷰 보여주는건 위 아래 둘다 보여지게  -->
+<section class="reviews">
+        <h2>리뷰</h2>
+        <div class="reviewList">
+        </div>
+    </section>

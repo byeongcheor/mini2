@@ -1,0 +1,18 @@
+package com.ict.mini.service;
+
+import java.util.List;
+
+import com.ict.mini.vo.FestivalVO;
+
+public interface FestivalService {
+	// 모든 축제 리스트를 가져오는 메서드
+	public List<FestivalVO> dataSelectAll();
+	// 새로운 축제 정보를 추가하는 메서드
+	public int dataInsert(FestivalVO vo);
+	// 특정 축제 정보를 가져오는 메서드
+	public FestivalVO getFestivalById(int no);
+	// 축제달력
+	public List<FestivalVO> calDataSelect(String date,String environment);
+	//축제달력
+	public List<FestivalVO> calDataSelect2(String date);
+}

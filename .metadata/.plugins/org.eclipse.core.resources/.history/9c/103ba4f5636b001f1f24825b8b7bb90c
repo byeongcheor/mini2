@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.mini.dao.CourseDAO">
+   <!-- 
+   <select id="courseSelectPaging" resultType="com.ict.mini.vo.CourseVO">
+      select news_no, subject, userid, hit, date_format(writedate, '%Y-%m-%d %H:%i') writedate, thumb
+      from course
+      <if test="searchWord != null and searchWord != ''">
+         where ${searchKey} like '%${searchWord}%'
+      </if>
+      order by news_no desc
+      limit ${onePageRecord} offset ${offset}
+   </select>
+    -->
+   <select id="courseSelectPaging" resultType="com.ict.mini.vo.CourseVO">
+      select news_no, subject, thumb, hit, writedate
+      from course
+      where
+         <choose>
+            <when test="searchKey == 'subject'">
+               subject like concat('%', #{searchWord}, '%')
+            </when>
+            <when test="searchKey == 'content'">
+                    content LIKE CONCAT('%', #{searchWord}, '%')
+                </when>
+                <when test="searchKey == 'userid'">
+                    userid LIKE CONCAT('%', #{searchWord}, '%')
+                </when>
+                <otherwise>
+                    1 = 1
+                </otherwise>
+         </choose>
+        <!-- Sort by newest first (most recent courses) -->
+        <if test="sort != null and sort == 'newest'">
+            ORDER BY writedate DESC
+        </if>
+
+        <!-- Sort by view count (most viewed courses) -->
+        <if test="sort != null and sort == 'viewCount'">
+            ORDER BY hit DESC
+        </if>
+
+        <!-- Default sort (most viewed courses) -->
+        <if test="sort == null">
+            ORDER BY hit DESC
+        </if>
+        limit ${onePageRecord} offset ${offset}
+   </select>
+   
+   <select id="totalRecord" resultType="int">
+      select count(news_no) from course
+      <if test="searchWord!=null and searchWord!=''">
+         where ${searchKey} like '%${searchWord}%'
+      </if>
+   </select>
+   
+   <insert id="courseInsert">
+      insert into course(subject,content,userid,ip,thumb)
+      values(#{subject},#{content},#{userid},#{ip},#{thumb})
+   </insert>
+   
+   <select id="courseSelect" resultType="com.ict.mini.vo.CourseVO">
+      select news_no, subject, content, hit, writedate, userid, thumb
+      from course
+      where news_no = ${param1}
+   </select>
+   
+   <update id="hitCount">
+      update course set hit=hit+1 
+      where news_no=${param1}    
+   </update>
+   
+   <update id="courseUpdate">
+      update course set subject=#{subject}, content=#{content}
+      where news_no=#{news_no} and userid=#{userid}
+   </update>
+   
+   <delete id="courseDelete">
+      delete from course
+      where news_no=${param1} and userid=#{param2}
+   </delete>
+</mapper>

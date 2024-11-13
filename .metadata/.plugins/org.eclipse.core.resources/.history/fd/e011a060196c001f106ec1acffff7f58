@@ -1,0 +1,292 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+   pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"  %>
+<script src="https://kit.fontawesome.com/5736c47827.js" crossorigin="anonymous"></script>
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=b45e962e5c780aecefa8a8cae0f46328&autoload=false"></script>
+<link rel="stylesheet" href="/mini/css/food.css" type="text/css"/>
+<title>${restView.store_name} : 음식 | 상세 정보</title>
+<script>
+$(function() {
+    // 좋아요 버튼 클릭 시
+    $('#like-icon').on('click', function() {
+        var rest_code = '${restView.rest_code}';  // 레스토랑 코드
+        var userId = '${logId}';  // 로그인 사용자 ID
+
+        $.ajax({
+            url: '/mini/rest/restView/' + rest_code + '/Togglelikes',
+            type: 'POST',
+            data: {
+                rest_code: rest_code,
+                userid: userId
+            },
+            success: function(response) {
+                if (response.error) {
+                    alert(response.error);
+                } else {
+                    $('#like-count').text(response.likeCount);
+                    $('#like-text').text(response.likes ? '♥' : '♡'); // '♥' 또는 '♡'로 업데이트
+                }
+            },
+            error: function(error) {
+                console.log('에러 발생:', error);
+            }
+        });
+    });
+
+    // 로그인 하였을 때 좋아요 상태 가져오기
+    $(document).ready(function() {
+        const userId = '${logId}';  // 로그인 사용자 ID 가져오기
+
+        if (userId) {
+            $.ajax({
+                url: '/mini/rest/restView/${restView.rest_code}/mylikes',
+                type: 'GET',
+                data: { userId: userId },
+                success: function(result) {
+                    if (result.error) {
+                        console.log(result.error);
+                    } else {
+                        console.log(result.likes);
+                        // UI 업데이트: 'likes' 값을 기반으로 HTML을 수정합니다.
+                        if (result.likes.length > 0) {
+                            $('#like-text').text('♥'); // 예: 좋아요가 있는 경우 '♥'로 표시
+                        } else {
+                            $('#like-text').text('♡'); // 예: 좋아요가 없는 경우 '♡'로 표시
+                        }
+                    }
+                },
+                error: function(error) {
+                    console.log('에러 발생:', error.responseText);
+                }
+            });
+        } else {
+            console.log('사용자가 로그인하지 않았습니다.');
+        }
+    });
+
+    // 리뷰 목록
+    function reviewList() {
+        $.ajax({
+            url: '/mini/rest/restView/${restView.rest_code}/reviews',
+            type: 'GET',
+            data: {
+                rest_code: ${restView.rest_code}
+            },
+            success: function(result) {
+                console.log(result);
+                var reviewTag = "";
+                $(result).each(function(idx, rrVO) {
+                    reviewTag += `<div><div><b>${rrVO.userid}</b> (${rrVO.writedate})`;
+                    if (rrVO.userid === '${logId}') {
+                        reviewTag += `<input type='button' value='Edit' />
+                                      <input type='button' value='Del' alt='${rrVO.review_no}' /></div>`;
+                        reviewTag += `<p>${rrVO.contents}</p></div>
+                                      <div style='display:none'>
+                                          <form method='post'>
+                                              <textarea name='contents' id='contents${rrVO.review_no}'>${rrVO.contents}</textarea>
+                                              <input type='hidden' name='review_no' value='${rrVO.review_no}' />
+                                              <input type='submit' value='댓글수정하기' />
+                                          </form>
+                                      </div>
+                                      <hr />`;
+                    } else {
+                        reviewTag += `</div><p>${rrVO.contents}</p></div><hr />`;
+                    }
+                });
+                $(".reviewList").html(reviewTag);
+            },
+            error: function(error) {
+                console.log('에러 발생:', error.responseText);
+            }
+        });
+    }
+
+    // 리뷰 목록 함수 호출
+    reviewList();
+});
+</script>
+<header class="header">
+        <img src="/mini/images/Food/${restView.imageurl}" alt="${restView.store_name} Image" class="header-img"/>
+        <h1 class="store-name">${restView.store_name}</h1>
+        <span class="status">${isOpen}</span>
+    </header>
+<!-- 주소 , 전화번호, 대표메뉴, 카테고리 영역  -->
+    <section class="details">
+        <div class="detail-item">
+            <i class="fa-solid fa-location-arrow"> 주소 </i>
+            <p>${restView.addr}</p>
+        </div>
+        <div class="detail-item">
+            <i class="fa-solid fa-headset"> 문의 및 안내 </i>
+            <p>${restView.tel}</p>
+        </div>
+        <div class="detail-item">
+            <i class="fa-solid fa-utensils"> 대표메뉴 </i>
+            <p> ${restView.repMenu}</p>
+        </div>
+        <div class="detail-item">
+            <i class="fa-solid fa-list"> 카테고리 </i>
+            <p>${restView.category}</p>
+        </div>
+<div class="detail-item">
+    <i class="fa-solid fa-thumbs-up" id="like-icon"> 좋아요 / (<span id="like-count">${likeCount}</span>)</i>
+    <p id="like-text">${likes}</p>
+</div>
+    </section>
+
+<!-- 영업시간  -->
+    <section class="hours">
+        <h2>영업시간</h2>
+        <p>${restView.opentime}</p>
+    </section>
+<!-- 메뉴 리스트  -->
+    <section class="menu-list">
+        <h2>메뉴 리스트</h2>
+        <p>${restView.menu1}</p>
+    </section>
+<!-- 가게 사진 목록  -->
+    <section class="photos">
+        <h2>${restView.store_name}의 사진</h2>
+        <div class="photos-gallery">
+            <img src="${restView.imageurl1}" alt="Photo 1"/>
+            <img src="${restView.imageurl2}" alt="Photo 2"/>
+            <img src="${restView.imageurl3}" alt="Photo 3"/>
+        </div>
+    </section>
+<!-- 가게 상세 내용  -->
+    <section class="explanation">
+        <h2>상세 설명</h2>
+        <p>${restView.explanation}</p>
+    </section>
+</div>
+<!-- 리뷰 섹션 -->
+ <c:if test="${logStatus == 'Y'}">
+<section class="review-form">
+        <h3>리뷰 작성하기</h3>
+        <form id="reviewForm" method="post" action="/submitReview">
+            <input type="hidden" name="rest_code" value="${restView.rest_code}"/>
+            <div class="form-group">
+                <label for="reviewContent">리뷰 내용:</label>
+                <textarea id="reviewContent" name="reviewContent" rows="4" required></textarea>
+            </div>
+            <input class="review-submit" type="submit" value="리뷰 제출"/>
+        </form>
+    </section>
+    </c:if>
+    <section class="reviews">
+        <h2>리뷰</h2>
+        <div class="reviewList">
+            <!-- 리뷰 내용이 여기에 삽입됩니다 -->
+        </div>
+    </section>
+<!-- 지도 영역  -->
+ <section class="map">
+<h2>가게 위치</h2>
+    <div id="map" style="width:100%;height:700px;"></div>
+    <!-- 서버에서 전달받은 데이터 JSON으로 변환 -->
+    <script type="application/json" id="storeData">
+        ${kakaomapJson}
+    </script>
+<script>
+    function loadKakaoMapsScript(callback) {
+        const script = document.createElement('script');
+        script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=b45e962e5c780aecefa8a8cae0f46328&autoload=false';
+        script.onload = callback;
+        script.onerror = function() {
+            console.error('Failed to load Kakao Maps script.');
+        };
+        document.head.appendChild(script);
+    }
+
+    function initializeMap() {
+        kakao.maps.load(function() {
+            const jsonString = document.getElementById('storeData').textContent;
+            let locations;
+            try {
+                locations = JSON.parse(jsonString);
+                console.log('Parsed JSON data:', locations); // JSON 데이터 확인
+            } catch (e) {
+                console.error('Failed to parse JSON data:', e);
+                return;
+            }
+
+            const targetRestCode = locations.length > 0 ? locations[0].rest_code : null;
+            const targetLocations = locations.filter(locations => locations.rest_code === targetRestCode);
+
+            if (targetLocations.length === 0) {
+                console.error('No store data found for the specified rest_code.');
+                return;
+            }
+
+            const firstLocation = targetLocations[0];
+            const centerPosition = new kakao.maps.LatLng(parseFloat(firstLocation.x_point), parseFloat(firstLocation.y_point));
+            
+            const mapContainer = document.getElementById('map');
+            const mapOptions = {
+                center: centerPosition, 
+                level: 1,
+                disableDefaultUI: true
+            };
+            const map = new kakao.maps.Map(mapContainer, mapOptions);
+
+            
+            // 지도 이동 제어 비활성화
+            map.setDraggable(false); // 드래그로 이동 불가
+            map.setZoomable(false); // 줌 조절 불가
+
+            // 마커와 정보창 추가
+            targetLocations.forEach(locations => {
+                const position = new kakao.maps.LatLng(parseFloat(locations.x_point), parseFloat(locations.y_point));
+                const marker = new kakao.maps.Marker({
+                    position: position,
+                    map: map,
+                    clickable : true
+                });
+                
+                marker.setMap(map);
+                
+                const infowindowContent = `<div style="padding:5px; font-size : 0.5em;">`+locations.store_name+`</div>`;
+                iwRemoveable = true;                
+                
+                // InfoWindow 객체 생성
+                const infowindow = new kakao.maps.InfoWindow({
+                    content: infowindowContent,
+                    removable : iwRemoveable
+                });
+                
+                console.log(locations.store_name);
+                console.log(locations.addr);
+                
+                kakao.maps.event.addListener(marker, 'click', function() {
+                    infowindow.open(map, marker);
+                });
+            });
+        });
+    }
+
+    loadKakaoMapsScript(initializeMap);
+    </script>
+    </section>
+    
+  <!-- 같은 카테고리의 목록 보여주기 -->
+<section class="similarRestaurant">
+    <h2>${restView.store_name}과 비슷한 맛집</h2>
+    <div class="RestaurantSimilar">
+        <c:forEach var="restaurant" items="${similarRestaurant}">
+            <div class="photo-item">
+                <a href="/restaurantDetail?rest_code=${restaurant.rest_code}">
+                    <img src="/mini/images/Food/${restaurant.imageurl}" alt="${restaurant.store_name}"/>
+                </a>
+                <p>${restaurant.store_name}</p>
+            </div>
+        </c:forEach>
+    </div>
+</section>
+
+<!-- 리뷰 보여주는건 위 아래 둘다 보여지게  -->
+<section class="reviews">
+        <h2>리뷰</h2>
+        <div class="reviewList">
+        </div>
+    </section>
+	

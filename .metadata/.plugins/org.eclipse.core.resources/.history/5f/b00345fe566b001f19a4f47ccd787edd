@@ -1,0 +1,210 @@
+@charset "UTF-8";
+
+#bannerImgBox{
+      width: 100%;
+      height: 800px;
+      overflow: hidden;
+      margin: 0 auto;
+      background-image: url('/mini/images/main/송정.jpg');
+      background-repeat: no-repeat;
+      background-position: center;
+
+ }
+ #locationBox{
+    text-align: center;
+    margin-top: 300px;
+ }
+ 
+   .contentAll{
+          margin-top: 100px;
+       }
+
+    #contentTitle1, #contentTitle2, #contentTitle3, #contentTitle4, #contentTitle5, #contentTitle6{
+       margin-top: 80px;
+       margin-left: 100px;
+       margin-bottom: 50px;
+    }
+    .class2{
+       width:300px;
+       height: 250px;
+       background-color: #c79288;
+       margin: 20px;
+       border-radius: 10px;
+    }
+    .class2 img{
+       width:100%;
+       height: 100%;
+       object-fit: cover;
+       border-radius: 10px;
+    }
+    /* 메인축제 포스터 글자조정 */
+.class2>a{
+	text-decoration: none; color:black;
+}
+
+.class3{
+   width:300px;
+   height: 270px;
+   background-color: #c79288;
+   margin: 20px;
+   border-radius: 10px;
+}
+.class3 img{
+   width:100%;
+   height:100%;
+   border-radius: 10px;
+   object-fit: cover;
+}
+/* 메인맛집 포스터 글자조정 */
+      .class3>a{
+      text-decoration: none; color:black;
+      }
+      .variable-width{
+         width: 200px;
+         height: 250px;
+        
+      }
+     
+.hitFestivalContent{
+         width: 300px;
+         height: 400px;
+         background-color: #c79288;
+         float: left;
+         margin: 10px;
+         margin-top: 20px;
+         border-radius: 10px;
+      }
+.hitFestivalContent img{
+         width:100%;
+         height:100%;
+         object-fit: cover;
+         border-radius: 10px;
+      }
+       #hitFestivalBox{
+         width: 1400px;
+         height: 500px;
+         margin-left: 100px;
+         text-align: center;
+         float: left;
+         
+      }
+      #bgImg{
+         width:100%;
+         height:500px;
+         background-image: url('/mini/images/main/축제배경.png');
+         background-repeat: no-repeat;
+         background-position: center;
+      }
+      #bgImg2{
+         width:100%;
+         height:500px;
+         background-image: url('mini/images/main/음식배경.png');
+         background-repeat: no-repeat;
+         background-position: center;
+      }
+      #hitFoodBox{
+         margin-left: 100px;
+         width: 1200px;
+         height: 400px;
+      }
+      .hitFood{
+         width: 350px;
+         height: 350px;
+         border-radius: 200px;
+         background-color: #c79288;
+         font-size: 60pt;
+         margin: 20px;
+         margin-top: 50px;
+         float: left;
+      }
+      .hitFood img{
+         width:100%;
+         height:100%;
+         object-fit: cover;
+         border-radius: 200px;
+      }
+      .hitFood span{
+      	position: absolute;
+      	 z-index: 1;
+      }
+      #mainbody #test{
+      	margin-left:35%;
+      	width:500px;
+      	height:auto;
+      	position: absolute;
+      	border:1px solid red;
+      	display:none;
+      	margin-top:-300px;
+      }
+#mainbody #test .busanbutton{
+      	width:22%;
+      	height:50px;
+      	margin:5px;
+      }
+      #marineIndex{
+      width: 1000px;height: 600px;
+      }
+      #siteList{
+      width:100%;
+      display: flex;
+      margin-left:100px;
+      }
+      #siteList>div{
+    	
+      	padding-left:10px; 
+      	
+      }
+#siteList>div #pago{
+	color:white;
+	background-color: #2D72E1;
+	margin-left:5%;
+	display: inline-block; 
+	
+  }
+#siteList>div #suon{
+	color:white;
+	background-color: #0A5099;
+	margin-left:5%;
+	display: inline-block; 
+
+  }
+ #siteList>div #waterhight,#siteList>div #watertemp{
+ 	margin-left:5%;
+ 	font-size: 14px;
+ }
+ #siteList>div>h4{
+ text-align: center; padding-top:40px;
+ }
+ #siteList>div .site{
+ margin-bottom: 10px;
+ margin-top: 20px;
+ }
+ #busanweather{
+ width:800px;
+ }
+  #busanweather #nowweather{
+  	margin:0;
+  	padding:0;
+  	display: flex;
+  	margin-left: 19px;
+  	
+  }
+  #busanweather #nowweather>div{
+  	width: 33%;
+  }
+  #busanweather .weatherimg>img{
+  	height: 100%;
+
+  }
+  #busanweather .weatherdata{
+
+  display: inline-block; 
+  height: 100%;
+  font-weight: bold;
+  font-size: 1.3em;
+  
+  }
+  #buttonContainer>button{
+  	width: 16%;
+  	margin-left:15px;
+  }

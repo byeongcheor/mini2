@@ -1,0 +1,245 @@
+package com.ict.mini.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ict.mini.service.RestService;
+import com.ict.mini.vo.LikeVO;
+import com.ict.mini.vo.MemberVO;
+import com.ict.mini.vo.RestReviewVO;
+import com.ict.mini.vo.RestVO;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/rest")
+public class RestController {
+      @Autowired
+      RestService service;
+      
+      ModelAndView mav = null;
+      
+      // 음식 리스트 페이지 
+      @GetMapping("/restList")
+      public String restList(Model model) {
+         
+         List<RestVO> food = service.getRestByCategory("한식");
+         List<RestVO> Japanesefood = service.getRestByCategory("일식");
+         List<RestVO> westernstyle = service.getRestByCategory("서양식");
+         List<RestVO> cafe = service.getRestByCategory("카페");
+         List<RestVO> Chinesefood = service.getRestByCategory("중식");
+         List<RestVO> Uniquefood = service.getRestByCategory("이색음식점");
+         
+         
+         model.addAttribute("food",food);
+         model.addAttribute("Japanesefood",Japanesefood);
+         model.addAttribute("westernstyle",westernstyle);
+         model.addAttribute("cafe",cafe);
+         model.addAttribute("Chinesefood",Chinesefood);
+         model.addAttribute("Uniquefood",Uniquefood);
+         return "/board/rest/RestList";
+      }
+      private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
+      @GetMapping("/restView/{rest_code}")
+      public String getRestView(@PathVariable("rest_code") int rest_code, Model model, RestVO vo) {
+    	  
+			
+          RestVO restView = service.getRestViewByCode(rest_code);
+          LocalTime now = LocalTime.now();
+
+          // 데이터베이스 opentime 추출
+          String opentimeString = restView.getOpentime();
+          LocalTime opentime = null;
+          LocalTime closeTime = null;
+          LocalTime breakStartTime = null;
+          LocalTime breakEndTime = null;
+          LocalTime lastOrderTime = null;
+
+          try {
+              // 영업시간 부분 추출
+              String[] parts = opentimeString.split("<br>");
+              String[] regularHours = parts[0].split("[-~]");
+              if (regularHours.length == 2) {
+                  LocalTime open = LocalTime.parse(regularHours[0].trim(), TIME_FORMATTER);
+                  LocalTime close = LocalTime.parse(regularHours[1].trim(), TIME_FORMATTER);
+
+                  // 자정 넘어가는 경우 처리
+                  if (close.isBefore(open)) {
+                      // 자정을 넘어가는 경우, 영업 종료 시간을 24시간 형식으로 처리
+                      if (now.isAfter(open) || now.isBefore(close)) {
+                          opentime = open;
+                          closeTime = close;
+                      }
+                  } else {
+                      opentime = open;
+                      closeTime = close;
+                  }
+              }
+
+              // 추가 시간 정보 처리
+              for (int i = 1; i < parts.length; i++) {
+                  String part = parts[i].trim();
+
+                  // 브레이크 타임 패턴
+                  Matcher breakTimeMatcher = Pattern.compile("(브레이크타임|평일 브레이크타임) (\\d{2}:\\d{2})[-~](\\d{2}:\\d{2})").matcher(part);
+                  if (breakTimeMatcher.find()) {
+                      breakStartTime = LocalTime.parse(breakTimeMatcher.group(2), TIME_FORMATTER);
+                      breakEndTime = LocalTime.parse(breakTimeMatcher.group(3), TIME_FORMATTER);
+                  }
+
+                  // 라스트 오더 패턴
+                  Matcher lastOrderMatcher = Pattern.compile("라스트오더 (\\d{2}:\\d{2})").matcher(part);
+                  if (lastOrderMatcher.find()) {
+                      lastOrderTime = LocalTime.parse(lastOrderMatcher.group(1), TIME_FORMATTER);
+                  }
+              }
+
+              // 로그 추가: 디버깅 용
+              System.out.println("Current Time: " + now);
+              System.out.println("Open Time: " + opentime);
+              System.out.println("Close Time: " + closeTime);
+              System.out.println("Break Start Time: " + breakStartTime);
+              System.out.println("Break End Time: " + breakEndTime);
+              System.out.println("Last Order Time: " + lastOrderTime);
+
+              // 현재 시간 구하기
+              boolean isWithinOperatingHours = opentime != null && closeTime != null &&
+                      (now.isAfter(opentime) || now.isBefore(closeTime));
+              boolean isInBreakTime = breakStartTime != null && breakEndTime != null &&
+                      now.isAfter(breakStartTime) && now.isBefore(breakEndTime);
+              boolean isBeforeLastOrder = lastOrderTime == null || now.isBefore(lastOrderTime);
+
+              // 최종 영업 중 여부 결정
+              boolean isOpen = isWithinOperatingHours && !isInBreakTime && isBeforeLastOrder;
+
+              // 모델에 정보 추가
+              model.addAttribute("restView", restView);
+              model.addAttribute("isOpen", isOpen ? "영업중" : "영업종료");
+
+          } catch (Exception e) {
+              // 예외 처리
+              e.printStackTrace();
+              model.addAttribute("isOpen", "영업종료");
+          }
+          
+          	// 카카오맵 사용하기
+          	List<RestVO> kakaomap = service.getKakaoMap(rest_code);
+	        
+	        if (kakaomap.isEmpty()) {
+	            System.out.println("No store data found.");
+	        } else {
+	            System.out.println("Store data: " + kakaomap);
+	        }
+
+	        // JSON 변환
+	        ObjectMapper mapper = new ObjectMapper();
+	        String kakaomapJson = null;
+	        try {
+	            kakaomapJson = mapper.writeValueAsString(kakaomap);
+	        } catch (JsonProcessingException e) {
+	            e.printStackTrace();
+	        }
+	        
+	        model.addAttribute("kakaomapJson", kakaomapJson);
+	        
+	        
+	        // 해당 rest_code 와 카테고리가 같은 비슷한 맛집 보여주기(같은 rest_code는 중복 X 표시)
+	        List<RestVO> similarRestaurant = service.getSimilarRestaurant(rest_code);
+	        model.addAttribute("similarRestaurant",similarRestaurant);
+	        
+          log.info(restView.toString());
+          return "/board/rest/RestView";
+      }
+      
+   // 리뷰 목록 보여주기
+      @GetMapping("/restView/{rest_code}/reviewsList")
+      @ResponseBody
+      public List<RestReviewVO> ReviewList(@PathVariable("rest_code") int rest_code, HttpSession session , Model model){
+            
+         String sessionUserid = (String)session.getAttribute("logId") ;
+             
+            // 리뷰 목록을 조회
+           List<RestReviewVO> reviews = service.getReviewSelect(rest_code);
+
+           // 리뷰 목록을 반환합니다.
+           return reviews;
+      } 
+      
+   // 좋아요 (세션 : 아이디)
+      @PostMapping("/restView/{rest_code}/Togglelikes")
+      @ResponseBody
+      public Map<String, Object> Togglelikes(@PathVariable("rest_code") int rest_code, HttpSession session) {
+          Map<String, Object> response = new HashMap();
+          
+          String userId = (String) session.getAttribute("logId");
+          
+          // 로그 출력
+          System.out.println("userId: " + userId);
+          
+          if (userId == null) {
+              response.put("error", "로그인이 필요한 기능입니다.");
+              return response;
+          }
+          
+          try {
+              boolean likes = service.isLiked(userId, rest_code);
+              if (likes) {
+                  service.removeLike(userId, rest_code);  // 좋아요 상태가 true이면 삭제
+              } else {
+                  service.addLike(userId, rest_code);  // 좋아요 상태가 false이면 추가
+              }
+              response.put("message", likes ? "좋아요 활성화 삭제" : "좋아요 활성화 추가");
+              response.put("likes", likes);  // 상태를 반전시켜서 반환
+              response.put("likeCount", service.selectLikeCount(rest_code));  // 좋아요 개수 가져오기
+          } catch (Exception e) {
+              response.put("error", "에러 발생");
+              e.printStackTrace();
+          }
+          return response;
+      }
+
+      @GetMapping("/restView/{rest_code}/mylikes")
+      @ResponseBody
+      public Map<String, Object> getMyLikes(HttpSession session) {
+          Map<String, Object> response = new HashMap();
+          
+          String userId = (String) session.getAttribute("logId");
+          
+          if (userId == null) {
+              response.put("error", "로그인이 필요한 기능입니다.");
+              return response;
+          }
+          
+          try {
+              List<LikeVO> likes = service.getUserLikes(userId);
+              response.put("likes", likes);
+          } catch (Exception e) {
+              response.put("error", "오류 발생.");
+              e.printStackTrace();
+          }
+          
+          return response;
+      }
+}

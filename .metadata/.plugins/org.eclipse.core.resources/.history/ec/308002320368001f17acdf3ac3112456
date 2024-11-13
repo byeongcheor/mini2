@@ -1,0 +1,191 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<link rel="stylesheet" href="/mini/css/cal.css" type="text/css"/>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script>
+        let labels =[];
+        let datas = [];
+
+        // 날씨 관련된 변수
+        var weathertoday = new Date();
+        var weatheryear = weathertoday.getFullYear();
+        var weathermonth = weathertoday.getMonth() + 1;
+        var weatherday = weathertoday.getDate();
+        let weatherclosestTime = null;
+        let weatherclosestDifference = Infinity;
+        var weathernowdate = weatheryear + "-";
+        if (weathermonth < 10) {
+            weathermonth = "0" + weathermonth;
+        }
+        if (weatherday < 10) {
+            weatherday = "0" + weatherday;
+        }
+        weathernowdate = weathernowdate + weathermonth + "-" + weatherday;
+        const weathernowtime = Math.floor((Date.now() + 9 * 60 * 60 * 1000) / 1000);
+
+        // 달력 관련된 변수
+        var now = new Date();  // 기본적으로 현재 날짜로 설정
+        var year;
+        var month;
+        var rnow = new Date();
+        var nowd = rnow.getDate();
+        var nowm = rnow.getMonth() + 1;
+        var nowy = rnow.getFullYear();
+        console.log(nowd, nowm, nowy);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadWeatherData(); // 날씨 데이터를 먼저 로드
+        });
+
+
+        // 날짜 불러오기------------------------------------------------------------------------------------------------------------
+
+
+        function loadWeatherData() {
+            setTimeout(function() {
+                var xHttp = new XMLHttpRequest();
+
+                // 응답받았을 때 이벤트
+                xHttp.onreadystatechange = function() {
+                    let tag = "";
+                    if (this.readyState == 4 && this.status == 200) {
+                        let result = JSON.parse(this.responseText);
+                        console.log(result);
+                        console.log(weathernowdate);
+
+                        for (let i = 0; i < result.list.length; i++) {
+                            console.log(result.list[i].dt_txt.substring(11, 16));
+
+                            if (weathernowtime > result.list[i].dt) {
+                                console.log("안나오는 값");
+                            } else if (weathernowdate == result.list[i].dt_txt.substring(0, 10)) {
+                                console.log("test");
+                                var weathersetnow = Math.abs(result.list[i].dt - weathernowtime);
+                                if (weathersetnow < weatherclosestDifference) {
+                                    weatherclosestDifference = weathersetnow;
+                                    weatherclosestTime = result.list[i];
+                                    tag = "<table>";
+                                    tag += "<tr><td><img src='/mini/images/" + weatherclosestTime.weather[0].icon + ".png'/></td></tr>";
+                                    tag += "<tr><td>" + result.list[i].main.temp + "°C</td></tr>";
+                                    tag += "</table>";
+                                    datas.push(result.list[i].weather[0].icon);
+                                    labels.push(result.list[i].main.temp);
+                                }
+                            } else if (result.list[i].dt_txt.substring(11, 16) == "00:00") {
+                                tag += "<table>";
+                                tag += "<tr><td><img src='/mini/images/" + result.list[i].weather[0].icon + ".png'/></td></tr>";
+                                tag += "<tr><td>" + result.list[i].main.temp + "°C</td></tr>";
+                                tag += "</table>";
+                                datas.push(result.list[i].weather[0].icon);
+                                labels.push(result.list[i].main.temp);
+                            }
+                            
+
+                        
+                        }
+                        
+                        setDayView(); // 날씨 데이터 로드 후 달력 초기화
+                    }
+                };
+
+                // 요청
+                var url = "https://api.openweathermap.org/data/2.5/forecast?lat=37.544558&lon=127.056968&appid=79908538f557fa6efd9c4f4b21907bca&lang=kr&units=metric";
+                xHttp.open("GET", url, true);
+                xHttp.send();
+            }, 100);
+        }
+        // 달력------------------------------------------------------------------------------------------------------------
+        function setDayView() {
+            year = now.getFullYear();
+            month = now.getMonth() + 1;  // getMonth()는 0부터 시작하므로 1을 더해줌
+
+            document.getElementById('yn').innerHTML = 
+                year + "년 " + month + "월" + 
+                "<div><button onclick='prevMonth()'><img src='/mini/images/leftbutton.png'></button>" + 
+                "<button onclick='nextMonth()'><img src='/mini/images/rightbutton.png'/></button>" + 
+                "<button onclick='goNow()'><img src='/mini/images/resetbutton.png'/></button></div>";
+
+            var firstDayOfMonth = new Date(year, month - 1, 1);
+            var week = firstDayOfMonth.getDay();  // 해당 월의 첫 번째 날의 요일 (0: 일요일, 1: 월요일, ...)
+
+            var lastDayOfMonth = new Date(year, month, 0).getDate();
+
+            var dayStr = "";
+            var weekName = ['일', '월', '화', '수', '목', '금', '토'];
+            for (var i = 0; i < weekName.length; i++) {
+                dayStr += "<li class='weekName'>" + weekName[i] + "</li>";
+            }
+
+            for (var s = 0; s < week; s++) {
+                dayStr += "<li class='dayn'>&nbsp;</li>";
+            }
+
+            for (var d = 1; d <= lastDayOfMonth; d++) {
+                // 현재 날짜와 일치하는 경우 (오늘 날짜)
+                if (nowd == d && month == nowm && year == nowy) {
+                    dayStr += "<li class='nowday'><button onclick='test(" + year + "," + month + "," + d + ")'><div class='daynum' id=" + year + "-" + month + "-" + d +">" + d + "</div><div>"+labels[0]+"</div></button></li>";
+                
+                // 현재 날짜 이후 오늘+5일까지의 경우 (오늘 이후 5일까지)
+                } else if (d > nowd && d <= nowd + 5 && month == nowm && year == nowy) {
+                    var labelIndex = d - nowd;  // labels 배열에서 오늘 이후의 날짜에 맞는 인덱스 계산
+                    dayStr += "<li class='dayn'><button onclick='test(" + year + "," + month + "," + d + ")'><div class='daynum' id=" + year + "-" + month + "-" + d +">" + d + "</div><div>"+labels[Index]+"</div><div><img src='/mini/images/'"+datas[Index]+"/></div></button></li>";
+                
+                // 현재 달의 마지막 날 이후, 다음 달의 날짜를 처리 (9월로 넘어가는 경우 등)
+                } else if (d <= (nowd + 5 - lastDayOfMonth) && month == (nowm % 12) + 1 && year == nowy + Math.floor(nowm / 12)) {
+                    var labelIndex = lastDayOfMonth - nowd + d;  // labels 배열에서 다음 달 날짜에 맞는 인덱스 계산
+                    dayStr += "<li class='dayn'><button onclick='test(" + year + "," + ((month % 12) + 1) + "," + d + ")'><div class='daynum' id=" + year + "-" + ((month % 12) + 1) + "-" + d +">" + d + "</div><div>"+labels[labelIndex]+"</div></button></li>";
+                
+                // 그 외의 날짜 처리 (특별한 조건에 해당하지 않는 날짜)
+                } else {
+                    dayStr += "<li class='dayn'><button onclick='test(" + year + "," + month + "," + d + ")'><div class='daynum' id=" + year + "-" + month + "-" + d +">" + d + "</div></button></li>";
+                }
+            }         
+            console.log(labels);
+            console.log(datas);
+            document.getElementById("day").innerHTML = dayStr;
+        }
+
+        function test(y, m, dnum) {
+            if (m < 10) m = "0" + m;
+            if (dnum < 10) dnum = "0" + dnum;
+            alert(y + "-" + m + "-" + dnum);
+        }
+
+        function nextMonth() {
+            now.setMonth(now.getMonth() + 1); // 월을 1 증가시킴
+            setDayView(); // 새로운 월에 대해 달력을 다시 그림
+        }
+
+        function prevMonth() {
+            now.setMonth(now.getMonth() - 1); // 월을 1 감소시킴
+            setDayView(); // 새로운 월에 대해 달력을 다시 그림
+        }
+
+        function goNow() {
+            now = new Date(nowy, nowm - 1, nowd);
+            setDayView();
+        }
+    </script>
+</head>
+<body id="calendar">
+   
+    <div id="dateView">
+        <div id="pagename"><h3>월별축제달력</h3></div>
+        <div id="yn"></div>
+        <div id="calView">
+            <div id='days'>
+                <ul id="day">
+                    <li></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+     <div id="test111"></div>
+</body>
+</html>

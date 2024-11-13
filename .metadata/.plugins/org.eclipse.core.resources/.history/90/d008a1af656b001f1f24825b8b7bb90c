@@ -1,0 +1,50 @@
+package com.ict.mini.service;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.ict.mini.dao.MemberDAO;
+import com.ict.mini.vo.MemberVO;
+
+@Service
+public class MemberServiceImpl implements MemberService {
+	@Inject
+	MemberDAO dao;
+	
+	@Override
+	public MemberVO loginOk(MemberVO vo) {
+		return dao.loginOk(vo);
+	}
+
+	@Override
+	public int idDoubleCheck(String userid) {
+		return dao.idDoubleCheck(userid);
+	}
+
+	@Override
+	public int memberInsert(MemberVO vo) {
+		return dao.memberInsert(vo);
+	}
+
+	@Override
+	public MemberVO memberSelect(String userid) {
+		return dao.memberSelect(userid);
+	}
+
+	@Override
+	public int memberUpdate(MemberVO vo) {
+		return dao.memberUpdate(vo);
+	}
+	
+	
+	
+	
+	
+	//아이디찾기
+	@Override
+	public String findId(String username, String tel) {
+		return dao.findId(username, tel);
+	}
+	
+}

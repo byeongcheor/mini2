@@ -1,0 +1,36 @@
+package com.ict.mini.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.ict.mini.dao.RestDAO;
+import com.ict.mini.vo.RestVO;
+
+@Service
+public class RestServiceImpl implements RestService {
+	@Autowired
+	RestDAO dao;
+
+	@Override
+	public List<RestVO> getRestByCategory(String category) {
+		return dao.getRestByCategory(category);
+	}
+
+	@Override
+	public RestVO getRestViewByCode(int rest_code) {
+		return dao.getRestViewByCode(rest_code);
+	}
+
+	@Override
+	public List<RestVO> restAllSelect() {
+		
+		return dao.restAllSelect();
+	}
+
+	@Override
+	public List<RestVO> restAddrSelect(String addrdetails) {
+		return dao.restAddrSelect(addrdetails);
+	}
+}

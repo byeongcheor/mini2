@@ -1,0 +1,16 @@
+@charset "EUC-KR";
+
+.sub{
+	font-size: 1.3em;font-weight: bold;
+	
+}
+.mypageFavFrm{
+	
+	width: 350px;  margin: 0 auto; overflow:auto;
+}
+
+#qnacontent{
+	border: 1px solid #ddd;
+	
+	height: 250px
+}

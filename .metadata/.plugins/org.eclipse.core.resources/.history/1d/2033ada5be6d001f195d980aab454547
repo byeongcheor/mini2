@@ -1,0 +1,141 @@
+package com.ict.mini.controller;
+
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.ict.mini.service.FestivalService;
+import com.ict.mini.service.RestService;
+import com.ict.mini.vo.FestivalReviewVO;
+import com.ict.mini.vo.FestivalVO;
+import com.ict.mini.vo.PagingVO;
+import com.ict.mini.vo.RestVO;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/festival")
+public class FestivalController {
+	@Inject
+	FestivalService service;
+	
+	@Inject
+    RestService restService;
+	
+	@GetMapping("/festivalList")
+	public ModelAndView dataList(
+	    @RequestParam(value = "sortBy", defaultValue = "hit") String sortBy,
+	    PagingVO pVO
+	) {
+	    ModelAndView mav = new ModelAndView();
+	    pVO.setSort(sortBy);
+	    // 해당 페이지에 맞는 데이터와 총 데이터 수를 가져옵니다.
+	    pVO.setTotalRecord( service.getFestivalCount(pVO));
+	    log.info(pVO.toString());
+	    // 총 데이터 개수
+	    List<FestivalVO> festivalList = service.getPagedFestivalList( pVO); // 페이징된 리스트
+	    // 페이지 관련 정보 전달
+	    mav.addObject("festivalList", festivalList);
+	    mav.addObject("sortBy", sortBy); // 현재 정렬 기준을 뷰에 전달
+	    mav.addObject("pVO", pVO); // 현재 페이지
+	   // 한 페이지당 표시할 항목 수
+
+	    mav.setViewName("/board/festival/festivalList");
+	    return mav;
+	}
+
+	@GetMapping("/festivalView/{no}")
+    public String viewFestival(@PathVariable("no") int no, Model model) {
+		// 조회수 증가
+	    service.incrementHitCount(no);
+        // no 값을 이용해 DB에서 해당 축제의 상세 정보를 조회
+        FestivalVO festival = service.getFestivalById(no);
+        
+        if (festival == null) {
+            // 만약 null이면 오류 처리나 기본 페이지로 리다이렉트 등을 처리할 수 있습니다.
+            System.out.println("없쪄 " + no);
+            return "redirect:/board/festival/festivalList"; // 기본 리스트 페이지로 리다이렉트
+        }
+
+        // 인기 있는 음식점 4개 조회
+        List<RestVO> popularRestaurants = restService.getPopularRestaurants();
+        model.addAttribute("popularRestaurants", popularRestaurants);
+        
+        // 축제 정보 모델에 추가
+        model.addAttribute("festival", festival);
+        
+        // 진행 중인 축제 목록 조회
+        List<FestivalVO> ongoingFestivals = service.getOngoingFestivals(); // 진행중인 축제 목록 조회
+        model.addAttribute("ongoingFestivals", ongoingFestivals);
+        
+        return "/board/festival/festivalView"; 
+ 
+	}
+	  // 리뷰 작성
+    @PostMapping("/festivalView/review/write")
+    public String writeOk(FestivalReviewVO vo, HttpSession session){
+		vo.setUserid((String)session.getAttribute("logId"));
+		log.info(vo.toString());
+		// 빈 값에 대한 기본 처리
+//	    if (vo.getFestival_no() == 0) {
+//	        return "Error: Festival number is missing";
+//	    }
+//	    if (vo.getRating() < 1 || vo.getRating() > 5) {
+//	        return "Error: Rating is invalid";
+//	    }
+	    
+		int result = 0;
+		try {
+			result = service.reviewInsert(vo);
+		}catch(Exception e) {
+			result = 0;
+		}
+		return result+"";
+	}
+    //댓글목록 선택
+	 @GetMapping("/festivalView/{festival_no}/festivalList") 
+	 @ResponseBody
+	 public List<FestivalReviewVO> list(@PathVariable("festival_no") Integer festival_no) { 
+		 if (festival_no == null) {
+		        throw new IllegalArgumentException("Festival number is required.");
+		    }
+		 return service.reviewSelectList(festival_no);
+	 } 
+	 //댓글수정(DB)
+	 @PostMapping("/festivalView/{festival_no}/edit") 
+	 public String edit(FestivalReviewVO vo, HttpSession session) {
+		    vo.setUserid((String) session.getAttribute("logId"));
+		    
+		    // 수정 성공 여부를 문자열로 반환
+		    return String.valueOf(service.reviewUpdate(vo));
+		}
+	 //댓글삭제
+	 @PostMapping("/festivalView/{festival_no}/delete") 
+	 public String del(@RequestParam(required = false) Integer review_no, HttpSession session) { 
+		 if (review_no == null) {
+		        throw new IllegalArgumentException("리뷰 번호가 없습니다.");
+		    }
+		String userid = (String)session.getAttribute("logId");
+	 	return service.reviewDelete(review_no, userid)+""; }
+
+	
+	// 찜하기 수 업데이트하는 메서드
+    @PostMapping("/updateLike")
+    public String updateLike(@RequestParam("no") int no) {
+        // 해당 축제의 찜하기 수 증가
+        service.incrementLikeCount(no);
+        return "redirect:/festival/festivalView/" + no; // 다시 해당 축제 페이지로 리다이렉트
+    }
+}

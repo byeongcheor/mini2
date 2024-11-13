@@ -1,0 +1,51 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
+<link rel="stylesheet" href="/mini/css/qnaView.css" type="text/css"/>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<% 
+    // 헤더와 풋터를 제외하려면 true로 설정합니다.
+    
+    request.setAttribute("excludeFooter", true);
+	String logid = (String) session.getAttribute("logId");
+	
+%>
+
+
+
+<div class="mypageFavFrm">
+    <div class="mypageFavTop">
+      <h1 class="loginTop"><img src="/mini/images/main/logo.png"></h1>
+        <h2>Q&A 보기</h2>
+    </div>
+    <div class="container">
+        <div class='sub'>제목:${vo.subject}</div>
+                
+        <div>내용</div>
+        <div>${vo.content}</div>
+    </div>
+    	<c:if test="${avo.content!=null||  fn:length(avo.content) != 0}">
+    		<div>답변</div>
+    		<div>${avo.content}</div>
+    	
+    	</c:if>
+    	<c:if test="${logId== 'root'&& (avo.content == null||  fn:length(avo.content) == 0)}">
+    		<form method="post" action="/mini/adminpage/answerWrite">
+    			<input type ="text" name="content" id="content"/>
+    			<input type="hidden" name='index' value="${vo.index}">
+    			<button>답변하기</button>
+    		</form>	
+    			
+    	</c:if>
+    
+    	<c:if test="${logId== 'root'&& (avo.content != null||  fn:length(avo.content) != 0)}">
+    		<button onclick='hideon()'>수정하기</button>
+    		<div id="Aeditform" style="d">
+	    		<form method="post" action="/mini/adminpage/answerWrite">
+	    			<input type ="text" name="content" id="content"/>
+	    			<input type="hidden" name='index' value="${vo.index}">
+	    			<button>답변하기</button>
+	    		</form>	
+	    	</div>
+    	</c:if>
+</div>

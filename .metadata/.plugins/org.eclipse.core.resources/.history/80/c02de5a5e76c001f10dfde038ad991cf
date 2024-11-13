@@ -1,0 +1,6 @@
+package com.ict.mini.dao;
+
+public interface MypageDAO {
+	public List<> 
+	
+}

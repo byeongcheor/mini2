@@ -1,0 +1,23 @@
+package com.ict.mini.service;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import com.ict.mini.dao.MypageDAO;
+import com.ict.mini.vo.InquiryVO;
+
+@Service
+public class MypageServiceImpl implements MypageService {
+	@Inject
+	MypageDAO dao;
+	
+	@Override
+	public List<InquiryVO> myinquiry(String userid) {
+		
+		return dao.myinquiry(userid);
+	}
+
+}

@@ -1,0 +1,6 @@
+package com.ict.mini.vo;
+
+public class AnswerVO {
+	private int no;
+	private index
+}

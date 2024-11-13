@@ -1,0 +1,25 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<script>
+function loginClosed() {
+    // 로그인 처리 로직
+    // 예를 들어, resultVo를 통해 사용자 정보를 가져왔다고 가정합니다.
+    const userId = resultVo.getUserid();
+    const userName = resultVo.getUsername();
+    
+    // 세션에 로그인 상태 저장 (예시로 localStorage 사용)
+    session.setAttribute("logId", resultVo.getUserid());
+	session.setAttribute("logName", resultVo.getUsername());
+	session.setAttribute("logStatus", "Y");
+
+    // 메인 페이지의 로컬 스토리지 업데이트 및 로그인 상태 갱신
+    if (window.opener && !window.opener.closed) {
+        window.opener.updateLoginStatus(userId, userName);
+    }
+
+    // 팝업 창 닫기
+    window.close();
+}
+
+</script>
+<div onload="loginClosed()"></div>

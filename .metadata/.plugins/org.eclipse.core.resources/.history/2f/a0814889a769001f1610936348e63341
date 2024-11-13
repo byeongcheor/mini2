@@ -1,0 +1,22 @@
+package com.ict.mini.controller;
+
+
+import org.springframework.stereotype.Controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class CourseController {
+	/*
+	 * @Autowired CourseService service;
+	 */
+	
+	@GetMapping("/courseList")
+	public String courseList(/* PagingVO pvo, Model model */) {
+//		pvo.setTotalRecord(service.totalRecord(pvo));
+//		List<CourseVO> list = service.courseSelectPaging(pvo);
+//		model.addAttribute("list", list);
+//		model.addAttribute("pvo", pvo);
+		return "/home";
+	}
+}

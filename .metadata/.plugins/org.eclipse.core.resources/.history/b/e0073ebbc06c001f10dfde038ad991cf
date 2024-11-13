@@ -1,0 +1,59 @@
+package com.ict.mini.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ict.mini.vo.LikeVO;
+import com.ict.mini.vo.RestReviewVO;
+import com.ict.mini.vo.RestVO;
+
+public interface RestDAO {
+
+	// 맛집 리스트 페이지
+	public List<RestVO> getRestByCategory(String category);
+	
+	// 상세보기 페이지
+	public RestVO getRestViewByCode(int rest_code);
+	
+	//맛집 전체출력
+	public List<RestVO> restAllSelect();
+	//맛집 지역별출력
+	public List<RestVO> restAddrSelect(String addrdetails);
+	//맛집TOP3
+	public List<RestVO> restTop3();
+	
+	// 카카오맵 맛집 위치 출력
+	List<RestVO> getKakaoMap(int rest_code);
+	
+	// 비슷한 맛집 출력
+	List<RestVO> getSimilarRestaurant(int rest_code);
+	
+	// 리뷰 목록 보여주기
+	List<RestReviewVO> getReviewSelect(int rest_code);
+	
+	// 좋아요 추가
+    void addLike(@Param("userid") String userid, @Param("rest_code") int rest_code);
+    
+    // 좋아요 삭제
+    void removeLike(@Param("userid") String userid, @Param("rest_code") int rest_code);
+    
+    // 좋아요 상태 확인
+    LikeVO checkListStatus(@Param("userid") String userid, @Param("rest_code") int rest_code);
+    
+    // 좋아요 개수 조회
+    int selectLikeCount(int rest_code);
+    
+    // 특정 사용자의 좋아요 목록 조회
+    List<LikeVO> getUserLikes(String userId);
+	// festival
+	public List<RestVO> getPopularRestaurants();
+	//관리자가 맛집하나씩 삭제
+    public void restDel(int rest_code);
+    //관리자가 맛집 한번에 삭제
+    public void 
+}
+
+
+	
+

@@ -1,0 +1,10 @@
+package com.ict.mini.dao;
+
+import com.ict.mini.vo.PagingVO;
+
+public interface RootPageDAO {
+	public int totalAllinquiry(PagingVO vo);
+	
+
+	
+}

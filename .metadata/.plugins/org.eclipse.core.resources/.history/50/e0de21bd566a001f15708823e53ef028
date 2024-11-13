@@ -1,0 +1,16 @@
+package com.ict.mini.dao;
+
+import java.util.List;
+
+import com.ict.mini.vo.RestVO;
+
+public interface RestDAO {
+
+	// 맛집 리스트 페이지
+	public List<RestVO> getRestByCategory(String category);
+	
+	// 상세보기 페이지
+	public RestVO getRestViewByCode(int rest_code);
+	
+	
+}

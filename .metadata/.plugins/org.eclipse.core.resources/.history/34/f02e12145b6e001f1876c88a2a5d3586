@@ -1,0 +1,239 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<style>
+ #bannerImgBox{
+        width: 100%;
+        height: 800px;
+        overflow: hidden;
+        margin: 0 auto;
+        background-image: url('./images/main/송정.jpg');
+        background-repeat: no-repeat;
+        background-position: center;
+
+   }
+   #locationBox{
+      text-align: center;
+      margin-top: 300px;
+   }
+</style>
+   <div id="bannerImgBox">
+      <!--사용자위치구하기-->
+      <div id="locationBox">
+         <h2 style="font-size: 35pt; color: white;">당신을 위한,</h2>
+         <h2 style="font-size: 45pt; font-weight: bold; margin-top: 20px; color: #d8ede7">해운대구</h2>
+         <button type="button" class="btn btn-light" style="margin-top: 20px; font-size: 17pt;">현위치로찾기</button>
+      </div> 
+   </div>
+   <!--컨텐츠css-->
+   <style>
+      .contentAll{
+            margin-top: 100px;
+         }
+
+      #contentTitle1, #contentTitle2, #contentTitle3, #contentTitle4, #contentTitle5, #contentTitle6{
+         margin-top: 80px;
+         margin-left: 100px;
+         margin-bottom: 50px;
+      }
+      .class2{
+         width:300px;
+         height: 250px;
+         background-color: #c79288;
+         margin: 20px;
+         border-radius: 10px;
+      }
+      .class2 img{
+         width:100%;
+         height: 100%;
+         object-fit: cover;
+         border-radius: 10px;
+      }
+      .class3{
+         width:300px;
+         height: 270px;
+         background-color: #c79288;
+         margin: 20px;
+         border-radius: 10px;
+      }
+      .class3 img{
+         width:100%;
+         height:100%;
+         border-radius: 10px;
+         object-fit: cover;
+      }
+      .variable-width{
+         width: 200px;
+         height: 250px;
+      }
+      #hitFestivalBox{
+         width: 1400px;
+         height: 500px;
+         margin-left: 100px;
+         text-align: center;
+         float: left;
+         
+      }
+      #hitFestivalContent{
+         width: 300px;
+         height: 400px;
+         background-color: #c79288;
+         float: left;
+         margin: 10px;
+         margin-top: 20px;
+         border-radius: 10px;
+      }
+      #hitFestivalContent img{
+         width:100%;
+         height:100%;
+         object-fit: cover;
+         border-radius: 10px;
+      }
+      #bgImg{
+         width:100%;
+         height:500px;
+         background-image: url('images/main/축제배경.png');
+         background-repeat: no-repeat;
+         background-position: center;
+      }
+      #bgImg2{
+         width:100%;
+         height:500px;
+         background-image: url('images/main/음식배경.png');
+         background-repeat: no-repeat;
+         background-position: center;
+      }
+      #hitFoodBox{
+         margin-left: 100px;
+         width: 1200px;
+         height: 400px;
+      }
+      #hitFood{
+         width: 350px;
+         height: 350px;
+         border-radius: 200px;
+         background-color: #c79288;
+         font-size: 60pt;
+         margin: 20px;
+         margin-top: 50px;
+         float: left;
+      }
+      #hitFood img{
+         width:100%;
+         height:100%;
+         object-fit: cover;
+         border-radius: 200px;
+      }
+      #hitFood span{
+      	position: absolute;
+      	 z-index: 1;
+      }
+   </style>
+
+   <!--컨텐츠-->
+   
+   <div class="contentAll">
+      <!--축제슬라이드(위치기반)-->
+      <div id="contentTitle1">
+         <h1>지금 부산에 가면?</h1>      
+      </div>
+      <div>
+         <div class="autoplay">
+            <div class="class2"><a href="#"><img src="./images/main/축제1.jpeg"/></a></div>
+            <div class="class2"><a href="#"><img src="./images/main/축제2.jpeg"/></a></div>
+            <div class="class2"><a href="#"><img src="./images/main/축제3.jpeg"/></a></div>
+            <div class="class2"><a href="#"><img src="./images/main/축제4.jpeg"/></a></div>
+            <div class="class2"><a href="#"><img src="./images/main/축제5.jpeg"/></a></div>
+            <div class="class2"><a href="#"><img src="./images/main/축제6.jpeg"/></a></div>
+         </div>
+      </div>
+      <!-- 맛집슬라이드(위치기반)-->
+      <div id="contentTitle2">
+         <h1>맛보고 즐기는 부산먹거리</h1>
+      </div>
+      <!-- 사용자 위치에 해당하는 구의 맛집 연결 -->
+      <div>
+         <div class="center">
+            <div class="class3"><a href="#"><img src="./images/main/음식1.jpeg"/></a></div>
+            <div class="class3"><a href="#"><img src="./images/main/음식2.jpeg"/></a></div>
+            <div class="class3"><a href="#"><img src="./images/main/음식3.jpeg"/></a></div>
+            <div class="class3"><a href="#"><img src="./images/main/음식4.jpeg"/></a></div>
+            <div class="class3"><a href="#"><img src="./images/main/음식5.jpeg"/></a></div>
+            <div class="class3"><a href="#"><img src="./images/main/음식6.jpeg"/></a></div>
+         </div>
+      </div>
+      <!-- 현재 인기있는 축제, 행사(조회수순) -->
+      <div id="contentTitle3">
+         <h1>지금 인기있는 축제•행사</h1>
+      </div>
+      <div id="bgImg">
+         <div id="hitFestivalBox">
+            <div id="hitFestivalContent"><a href="#"><img src="./images/main/행사1.jpg"/></a></div>
+            <div id="hitFestivalContent"><a href="#"><img src="./images/main/행사2.jpg"/></a></div>
+            <div id="hitFestivalContent"><a href="#"><img src="./images/main/행사3.jpg"/></a></div>
+            <div id="hitFestivalContent"><a href="#"><img src="./images/main/행사4.png"/></a></div>
+         </div>
+      </div>
+      <!-- 현재 인기있는 맛집(조회수순)-->
+      <div id="contentTitle4">
+         <h1>지금 제일 핫한 맛집</h1>
+      </div>
+      <div id="bgImg2">
+         <div id="hitFoodBox">
+            <div id="hitFood"><Span>🥇</Span><a href="#"><img src="./images/main/맛집1.jpeg"/></a></div>
+            <div id="hitFood"><Span>🥈</Span><a href="#"><img src="./images/main/맛집2.jpeg"/></a></div>
+            <div id="hitFood"><Span>🥉</Span><a href="#"><img src="./images/main/맛집3.jpeg"/></a></div>
+         </div>
+      </div>
+      <div id="marineIndex" style="float: left;">
+         <!-- 해양지수 -->
+         <div id="contentTitle5">
+            <h1>부산해양지수</h1>
+         </div>
+         <div>
+            <img src="./images/main/부산해양지수.png" style="width:1000px;height:auto; margin-left: 100px;">
+         </div>
+      </div>
+      <div style="margin-left: 100px;">
+         <!-- 부산기온 -->
+          <div id="contentTitle6" style="margin-left: 300px;">
+            <h1>부산현재날씨</h1>
+          </div>
+          <div>
+            <img src="./images/main/부산날씨.png" style="width: 900px; height:auto;">
+          </div>
+      </div>
+      
+   </div>
+   <!--footercss-->
+   <style>
+      footer{
+      border-top: 1px solid #e4e4e4;
+      background-color:#f8f9fa;
+      padding:1rem 0;
+      margin:1rem 0;
+      padding-top: 60px;
+      text-align: center;
+      margin-top: 100px;
+      
+      }
+
+      .footer-message{
+         font-weight: bold;
+         font-size:15pt;
+         color:#545e6f;
+         margin-top: 100px;
+         margin-bottom:0.3rem;
+         margin:0 0 0 0.6rem;
+      }
+      .footer-contact{
+         font-size:15pt;
+         color:#545e6f;
+         margin:0.6rem;
+      }
+      .footer-copyright{
+         font-size:15pt;
+         color:#545e6f;
+         margin:0.6rem;
+      }
+   </style>
+

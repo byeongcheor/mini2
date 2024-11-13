@@ -1,0 +1,18 @@
+package com.ict.mini.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.ict.mini.vo.InquiryVO;
+
+@Service
+public class MypageServiceImpl implements MypageService {
+
+	@Override
+	public List<InquiryVO> myinquiry(String userid) {
+		
+		return ;
+	}
+
+}

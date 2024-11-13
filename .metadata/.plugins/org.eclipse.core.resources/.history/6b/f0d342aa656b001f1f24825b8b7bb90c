@@ -1,0 +1,19 @@
+package com.ict.mini.dao;
+
+import com.ict.mini.vo.MemberVO;
+
+public interface MemberDAO {
+	//로그인
+		public MemberVO loginOk(MemberVO vo); 
+	//아이디 중복검사
+		public int idDoubleCheck(String userid);
+		//회원등록
+		public int memberInsert(MemberVO vo);
+		//회원선택
+		public MemberVO memberSelect(String userid);
+		//회원정보수정(DB)
+		public int memberUpdate(MemberVO vo);
+		
+		//아이디찾기
+		public String findId(String username, String tel);
+}

@@ -1,0 +1,87 @@
+<mapper namespace="com.ict.mini.dao.FestivalDAO">
+   <select id="dataSelectAll" resultType="com.ict.mini.vo.FestivalVO"> 
+		select no, title, date_format(start_date, '%Y-%m-%d') start_date, 
+			date_format(end_date, '%Y-%m-%d') end_date, 
+			addrdetails, poster, status, lat, lon, hit, `like`
+		from festival_tbl 
+	<choose>
+        <when test="sortBy == 'like'">
+            ORDER BY `like` DESC
+        </when>
+        <when test="sortBy == 'date'">
+            ORDER BY start_date ASC
+        </when>
+        <otherwise>
+            ORDER BY hit DESC
+        </otherwise>
+    </choose>
+	</select>
+
+   <!-- 축제 추가 -->
+   <insert id="dataInsert" parameterType="com.ict.mini.vo.FestivalVO" useGeneratedKeys="true" keyProperty="no"> 
+      insert into festival_tbl(title, start_date, end_date, addrdetails, poster, status, lat, lon, hit, `like`) 
+      values(#{title}, #{start_date}, #{end_date}, #{addrdetails}, #{poster}, #{status}, #{lat}, #{lon}, #{hit}, #{like}) 
+   </insert>
+
+   <!-- 특정 ID에 해당하는 축제 정보 가져오기 -->
+    <select id="getFestivalById" parameterType="int" resultType="com.ict.mini.vo.FestivalVO">
+        SELECT no, title, date_format(start_date, '%Y-%m-%d') start_date, 
+               date_format(end_date, '%Y-%m-%d') end_date, 
+               addrdetails, addr, poster, status , content, host, tel, environment, lat, lon, hit, `like`
+        FROM festival_tbl 
+        WHERE no = #{no}
+    </select>
+
+    <!-- 좋아요 개수 증가 -->
+    <update id="incrementLikeCount" parameterType="int">
+       UPDATE festival_tbl
+       SET `like` = `like` + 1
+       WHERE no = #{no}
+   </update>
+
+   <!-- 좋아요 개수 감소 -->
+   <update id="decrementLikeCount" parameterType="int">
+        UPDATE festival_tbl
+        SET `like` = `like` - 1
+        WHERE no = #{no}
+    </update>
+
+   <select id="festivalTop4" resultType="com.ict.mini.vo.FestivalVO">
+      select no, title, hit, `like`, poster from festival_tbl order by `like` desc limit 4;
+   </select>
+
+   <!-- 현재 진행 중인 축제만 조회하는 쿼리 -->
+   <select id="getOngoingFestivals" resultType="com.ict.mini.vo.FestivalVO">
+       select no, title, date_format(start_date, '%Y-%m-%d') start_date, 
+			date_format(end_date, '%Y-%m-%d') end_date, 
+			addrdetails, poster, status, lat, lon, hit, `like`
+		from festival_tbl  
+        WHERE CURRENT_DATE BETWEEN start_date AND end_date
+        LIMIT 4
+    </select>
+
+    <!-- 페이징된 리스트 가져오기 -->
+    <select id="getPagedFestivalList" parameterType="com.ict.mini.vo.PagingVO" resultType="com.ict.mini.vo.FestivalVO">
+        SELECT * FROM festival_tbl
+        <choose>
+            <when test="sort == 'hit'">
+                ORDER BY hit DESC
+            </when>
+            <when test="sort == 'like'">
+                ORDER BY `like` DESC
+            </when>
+            <otherwise>
+                ORDER BY start_date DESC
+            </otherwise>
+        </choose>
+        LIMIT #{offset}, #{onePageRecord}
+    </select>
+
+   <!-- 좋아요 상위 4개의 축제 가져오기 -->
+   <select id="festivalTop4" resultType="com.ict.mini.vo.FestivalVO">
+      select no, title, hit, `like`, poster 
+      from festival_tbl 
+      order by `like` desc 
+      limit 4;
+   </select>
+</mapper>

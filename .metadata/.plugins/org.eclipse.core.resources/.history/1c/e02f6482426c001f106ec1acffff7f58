@@ -1,0 +1,98 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
+<link rel="stylesheet" href="/mini/css/rootpage.css" type="text/css"/>
+<script>
+window.onload = function () {
+	$.ajax({
+		url:"/mini/adminpage/mem",
+		success:function(r){
+			var tag="<li><button type='button' onclick='checkboxon()')>일괄선택</button><button id='oncheck' type='button' style='display: none;' onclick='checkedboxon()')>일괄체크</button><div id='usertitle'><div class='memid '>아이디 </div><div class='memname'>이름</div><div class='mememail'>이메일</div>";
+			tag +="<div class='memtel'>전화번호</div><div class='memaddr'>주소</div><div class='memaddrdetail'>상세주소</div>";
+			tag +="<div class='memwritedate'>가입일</div></div></li>";
+			r.map(function(members,idx){
+				tag+="<li> <div><input type='checkbox' name='test[]' class='checkbox' style='display: none;' value='"+members.userid+"'/>";
+				tag+="<div class='memid'>"+members.userid+"</div><div class='memname'>"+members.username+"</div>";
+				tag+="<div class='mememail'>"+members.email+"</div><div class='memtel'>"+members.tel+"</div><div class='memaddr'>"+members.addr+"</div>";
+				tag+="<div class='memaddrdetail'>"+members.addrdetail+"</div><div class='memwritedate'>"+members.writedate+"</div><button class='userdel' type='button'onclick=userdel('"+members.userid+"')>탈퇴</button></div></li>";
+			});
+			$("#userList").html(tag);
+		},
+		error:function(e){
+			console.log(e);
+		}
+	});
+	
+	
+}
+	function checkboxon(){
+		var checkbox= document.querySelectorAll('.checkbox');
+		  var firstCheckbox = checkbox[0];
+		var onebox= firstCheckbox.style.display;
+		if (onebox =='none'){
+		 checkbox.forEach(function(checkbox) {
+		        checkbox.style.display = 'block'; // 각 체크박스의 display 스타일을 'block'으로 설정
+		        document.getElementById('memDel').style.display="block";
+		        document.getElementById('oncheck').style.display="block";
+		    });}
+		else{
+			 checkbox.forEach(function(checkbox) {
+			        checkbox.style.display = 'none'; // 각 체크박스의 display 스타일을 'none'으로 설정
+			        document.getElementById('memDel').style.display="none";
+			        document.getElementById('oncheck').style.display="none";
+			    });
+		}
+	}
+	function checkedboxon(){
+		var checkbox= document.querySelectorAll('.checkbox');
+		var firstCheckbox = checkbox[0];
+		if(firstCheckbox.checked){
+			
+			 checkbox.forEach(function(checkbox) {
+			        checkbox.checked=false;// 각 체크박스의 display 스타일을 'none'으로 설정
+			 }
+		}else{
+			 checkbox.forEach(function(checkbox) {
+			        checkbox.checked=true;// 각 체크박스의 display 스타일을 'none'으로 설정
+			 }	
+		}
+		}
+	}
+	function userdel(userid){
+		if(confirm("정말 삭제하시겠습니까?")){
+			location.href="/mini/adminpage/userDel/"+userid;
+		}
+	}
+</script>
+<div class="mypageFavFrm">
+	
+		<div class="mypageFavTop">
+			<div class="mypageFavName">
+				<a href="/mini/mypage/mypage"> 마이페이지</a>
+			</div>
+			<h2>회원관리</h2>
+		</div>
+	
+		<div class="adminpagemain">
+			
+			<div>
+				<form method="post" action="/mini/adminpage/memDel">	
+					<ul id="userList">
+					</ul>
+					<input id='memDel' type="submit" value="삭제" style="display: none;"/>
+				</form>	
+			</div>
+				
+		</div>
+			
+			
+			<div class="box_rightType1">
+				<!-- snb -->
+				<div class="snb_mypage">
+					<ul>
+						<li class="on"><a href="/mini/mypage/rootpage">회원관리</a></li>
+						<li><a href="#">정보관리</a></li>
+						<li><a href="#" id="qna">게시글관리</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>

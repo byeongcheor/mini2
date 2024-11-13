@@ -1,0 +1,122 @@
+package com.ict.mini.controller;
+
+import java.util.List;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.ict.mini.service.RestService;
+import com.ict.mini.vo.RestVO;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/rest")
+public class RestController {
+      @Autowired
+      RestService service;
+      
+      ModelAndView mav = null;
+      
+      // 음식 리스트 페이지 
+      @GetMapping("/restList")
+      public String restList(Model model) {
+         
+         List<RestVO> food = service.getRestByCategory("한식");
+         List<RestVO> Japanesefood = service.getRestByCategory("일식");
+         List<RestVO> westernstyle = service.getRestByCategory("서양식");
+         List<RestVO> cafe = service.getRestByCategory("카페");
+         List<RestVO> Chinesefood = service.getRestByCategory("중식");
+         List<RestVO> Uniquefood = service.getRestByCategory("이색음식점");
+         
+         
+         model.addAttribute("food",food);
+         model.addAttribute("Japanesefood",Japanesefood);
+         model.addAttribute("westernstyle",westernstyle);
+         model.addAttribute("cafe",cafe);
+         model.addAttribute("Chinesefood",Chinesefood);
+         model.addAttribute("Uniquefood",Uniquefood);
+         return "/board/rest/RestList";
+      }
+private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+      
+      // 상세보기 페이지
+      @GetMapping("/restView/{rest_code}")
+       public String getRestView(@PathVariable("rest_code") int rest_code, Model model) {
+           RestVO restView = service.getRestViewByCode(rest_code);
+           LocalTime now = LocalTime.now();
+
+        // 데이터베이스 opentime 추출
+           String opentimeString = restView.getOpentime();
+           LocalTime opentime = null;
+           LocalTime closeTime = null;
+           LocalTime breakStartTime = null;
+           LocalTime breakEndTime = null;
+           LocalTime lastOrderTime = null;
+
+           try {
+               // 영업시간 부분 추출
+               String[] parts = opentimeString.split("<br>");
+               String[] hours = parts[0].split("~");
+               opentime = LocalTime.parse(hours[0].trim(), TIME_FORMATTER);
+               closeTime = LocalTime.parse(hours[1].trim().split(" ")[0], TIME_FORMATTER);
+
+               // 추가 시간 정보 처리
+               for (int i = 1; i < parts.length; i++) {
+                   String part = parts[i].trim();
+                   
+                   // 브레이크 타임 패턴
+                   Matcher breakTimeMatcher = Pattern.compile("(브레이크타임|평일 브레이크타임) (\\d{2}:\\d{2})~(\\d{2}:\\d{2})").matcher(part);
+                   if (breakTimeMatcher.find()) {
+                       breakStartTime = LocalTime.parse(breakTimeMatcher.group(2), TIME_FORMATTER);
+                       breakEndTime = LocalTime.parse(breakTimeMatcher.group(3), TIME_FORMATTER);
+                   }
+                   
+                   // 라스트 오더 패턴
+                   Matcher lastOrderMatcher = Pattern.compile("라스트오더 (\\d{2}:\\d{2})").matcher(part);
+                   if (lastOrderMatcher.find()) {
+                       lastOrderTime = LocalTime.parse(lastOrderMatcher.group(1), TIME_FORMATTER);
+                   }
+               }
+
+               // 로그 추가: 디버깅 용
+               System.out.println("Current Time: " + now);
+               System.out.println("Open Time: " + opentime);
+               System.out.println("Close Time: " + closeTime);
+               System.out.println("Break Start Time: " + breakStartTime);
+               System.out.println("Break End Time: " + breakEndTime);
+               System.out.println("Last Order Time: " + lastOrderTime);
+
+               // 현재 시간 구하기
+               boolean isWithinOperatingHours = now.isAfter(opentime) && now.isBefore(closeTime);
+               boolean isInBreakTime = breakStartTime != null && breakEndTime != null && now.isAfter(breakStartTime) && now.isBefore(breakEndTime);
+               boolean isBeforeLastOrder = lastOrderTime == null || now.isBefore(lastOrderTime);
+
+               // 최종 영업 중 여부 결정
+               boolean isOpen = isWithinOperatingHours && !isInBreakTime && isBeforeLastOrder;
+
+               // 모델에 정보 추가
+               model.addAttribute("restView", restView);
+               model.addAttribute("isOpen", isOpen ? "영업중" : "영업종료");
+
+           } catch (Exception e) {
+               // 예외 처리
+               e.printStackTrace();
+               model.addAttribute("isOpen", "영업종료");
+           }
+
+           log.info(restView.toString());
+           return "/board/rest/RestView";
+       }
+
+     }

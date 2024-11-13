@@ -1,0 +1,17 @@
+package com.ict.mini.dao;
+
+import java.util.List;
+
+import com.ict.mini.vo.CourseVO;
+import com.ict.mini.vo.InquiryVO;
+import com.ict.mini.vo.PagingVO;
+
+public interface RootPageDAO {
+	public int totalAllinquiry(PagingVO pVO);
+	public List<InquiryVO> Allinquiry (PagingVO pVO);
+	public List<CourseVO> cSelectAll();
+	public void cOneDel(int news_no);
+	public void delClist(List<String>delClist);
+		
+	
+}

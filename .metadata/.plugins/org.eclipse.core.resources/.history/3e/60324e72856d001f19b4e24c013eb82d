@@ -1,0 +1,20 @@
+package com.ict.mini.dao;
+
+import java.util.List;
+
+import com.ict.mini.vo.CourseVO;
+import com.ict.mini.vo.InquiryVO;
+import com.ict.mini.vo.PagingVO;
+
+public interface RootPageDAO {
+	public int totalAllinquiry(PagingVO pVO);
+	public List<InquiryVO> Allinquiry (PagingVO pVO);
+	//일단 쓸것
+	public List<CourseVO> cSelectAll();
+	//관리자가 하나씩 삭제
+		public void cOneDel(int news_no);
+	//관리자가 한번에 삭제
+		public void delClist(List<String>delClist);
+		
+	
+}

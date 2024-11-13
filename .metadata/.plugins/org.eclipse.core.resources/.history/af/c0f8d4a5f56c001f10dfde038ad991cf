@@ -1,0 +1,16 @@
+package com.ict.mini.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.ict.mini.vo.AnswerVO;
+import com.ict.mini.vo.InquiryVO;
+import com.ict.mini.vo.PagingVO;
+
+public interface MypageDAO {
+	public List<InquiryVO> myinquiry(@Param("userid")String userid,@Param("pVO") PagingVO pVO);
+	public int totalmyinquiry(PagingVO pVO);
+	public List<AnswerVO> answer(String userid);
+	
+}

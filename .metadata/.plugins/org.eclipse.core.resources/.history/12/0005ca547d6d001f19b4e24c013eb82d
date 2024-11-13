@@ -1,0 +1,24 @@
+@charset "EUC-KR";
+
+.sub,.con,.acon{
+	font-size: 1.3em;font-weight: bold;
+	
+}
+.mypageFavFrm{
+	
+	width: 450px;  margin: 0 auto; overflow:auto;
+}
+#qnacontent{
+	border: 1px solid #ddd;
+	min-height:150px;
+	height: auto;
+}
+#answercon{
+	border: 1px solid #ddd;
+	min-height:150px;
+	height: auto;
+	
+}
+#Aeditform input[type=text]{
+	height: auto
+}

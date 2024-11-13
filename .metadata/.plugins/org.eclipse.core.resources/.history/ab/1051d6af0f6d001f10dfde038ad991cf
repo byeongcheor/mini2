@@ -1,0 +1,9 @@
+@charset "EUC-KR";
+
+.sub{
+	height: 50px;
+}
+.mypageFavFrm{
+	
+	
+}
